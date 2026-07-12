@@ -1,24 +1,12 @@
-import "server-only";
-
 import { decryptToken, encryptToken } from "@/lib/token-encryption";
+import type {
+  ClioTokensToStore,
+  StoredClioTokens,
+} from "@/lib/clio-token-store/types";
 
 const D1_BINDING = "jema_clio_db";
 const DEFAULT_USER_ID = "default";
 const DEFAULT_CONNECTION_ID = "default";
-
-export type StoredClioTokens = {
-  accessToken: string;
-  refreshToken: string;
-  expiresAt: number;
-  updatedAt: number;
-};
-
-type TokenRow = {
-  access_token: string;
-  refresh_token: string;
-  expires_at: number;
-  updated_at: number;
-};
 
 type D1TokenRow = {
   access_token_encrypted: string;
@@ -33,7 +21,7 @@ type D1PreparedStatement = {
   run(): Promise<unknown>;
 };
 
-type D1Database = {
+export type D1Database = {
   prepare(query: string): D1PreparedStatement;
 };
 
@@ -46,7 +34,7 @@ function isD1Database(value: unknown): value is D1Database {
   );
 }
 
-async function getCloudflareD1(): Promise<D1Database | null> {
+export async function getCloudflareD1(): Promise<D1Database | null> {
   try {
     const { getCloudflareContext } = await import("@opennextjs/cloudflare");
     const { env } = await getCloudflareContext({ async: true });
@@ -76,18 +64,9 @@ async function getCloudflareD1(): Promise<D1Database | null> {
   }
 }
 
-async function getLocalDb() {
-  const { getDb } = await import("@/lib/db");
-  return getDb();
-}
-
-async function saveClioTokensToD1(
+export async function saveClioTokensToD1(
   db: D1Database,
-  tokens: {
-    accessToken: string;
-    refreshToken: string;
-    expiresAt: number;
-  },
+  tokens: ClioTokensToStore,
 ): Promise<void> {
   const now = Date.now();
 
@@ -143,56 +122,9 @@ async function saveClioTokensToD1(
     .run();
 }
 
-async function saveClioTokensLocally(tokens: {
-  accessToken: string;
-  refreshToken: string;
-  expiresAt: number;
-}): Promise<void> {
-  const db = await getLocalDb();
-  const now = Date.now();
-
-  db
-    .prepare(
-      `
-        INSERT INTO clio_tokens (
-          id,
-          access_token,
-          refresh_token,
-          expires_at,
-          updated_at
-        )
-        VALUES (1, @accessToken, @refreshToken, @expiresAt, @updatedAt)
-        ON CONFLICT(id) DO UPDATE SET
-          access_token = excluded.access_token,
-          refresh_token = excluded.refresh_token,
-          expires_at = excluded.expires_at,
-          updated_at = excluded.updated_at
-      `,
-    )
-    .run({
-      accessToken: encryptToken(tokens.accessToken),
-      refreshToken: encryptToken(tokens.refreshToken),
-      expiresAt: tokens.expiresAt,
-      updatedAt: now,
-    });
-}
-
-export async function saveClioTokens(tokens: {
-  accessToken: string;
-  refreshToken: string;
-  expiresAt: number;
-}): Promise<void> {
-  const d1 = await getCloudflareD1();
-
-  if (d1) {
-    await saveClioTokensToD1(d1, tokens);
-    return;
-  }
-
-  await saveClioTokensLocally(tokens);
-}
-
-async function loadClioTokensFromD1(db: D1Database): Promise<StoredClioTokens | null> {
+export async function loadClioTokensFromD1(
+  db: D1Database,
+): Promise<StoredClioTokens | null> {
   const row = await db
     .prepare(
       `
@@ -221,53 +153,9 @@ async function loadClioTokensFromD1(db: D1Database): Promise<StoredClioTokens | 
   };
 }
 
-async function loadClioTokensLocally(): Promise<StoredClioTokens | null> {
-  const db = await getLocalDb();
-  const row = db
-    .prepare("SELECT access_token, refresh_token, expires_at, updated_at FROM clio_tokens WHERE id = 1")
-    .get() as TokenRow | undefined;
-
-  if (!row) {
-    return null;
-  }
-
-  return {
-    accessToken: decryptToken(row.access_token),
-    refreshToken: decryptToken(row.refresh_token),
-    expiresAt: row.expires_at,
-    updatedAt: row.updated_at,
-  };
-}
-
-export async function loadClioTokens(): Promise<StoredClioTokens | null> {
-  const d1 = await getCloudflareD1();
-
-  if (d1) {
-    return loadClioTokensFromD1(d1);
-  }
-
-  return loadClioTokensLocally();
-}
-
-async function deleteClioTokensFromD1(db: D1Database): Promise<void> {
+export async function deleteClioTokensFromD1(db: D1Database): Promise<void> {
   await db
     .prepare("DELETE FROM clio_connections WHERE user_id = ?")
     .bind(DEFAULT_USER_ID)
     .run();
-}
-
-async function deleteClioTokensLocally(): Promise<void> {
-  const db = await getLocalDb();
-  db.prepare("DELETE FROM clio_tokens WHERE id = 1").run();
-}
-
-export async function deleteClioTokens(): Promise<void> {
-  const d1 = await getCloudflareD1();
-
-  if (d1) {
-    await deleteClioTokensFromD1(d1);
-    return;
-  }
-
-  await deleteClioTokensLocally();
 }
