@@ -3,8 +3,11 @@ import { NextRequest, NextResponse } from "next/server";
 
 const STATE_COOKIE = "clio_oauth_state";
 
-function redirectToHome(request: NextRequest, params: Record<string, string>): NextResponse {
-  const url = new URL("/", request.url);
+function redirectToInvoices(
+  request: NextRequest,
+  params: Record<string, string>,
+): NextResponse {
+  const url = new URL("/invoices", request.url);
 
   for (const [key, value] of Object.entries(params)) {
     url.searchParams.set(key, value);
@@ -22,19 +25,19 @@ export async function GET(request: NextRequest) {
   const error = request.nextUrl.searchParams.get("error");
 
   if (error) {
-    return redirectToHome(request, {
+    return redirectToInvoices(request, {
       connection: "declined",
     });
   }
 
   if (!expectedState || !actualState || expectedState !== actualState) {
-    return redirectToHome(request, {
+    return redirectToInvoices(request, {
       connection: "invalid_state",
     });
   }
 
   if (!code) {
-    return redirectToHome(request, {
+    return redirectToInvoices(request, {
       connection: "missing_code",
     });
   }
@@ -45,7 +48,7 @@ export async function GET(request: NextRequest) {
 
     if (!status.connected) {
       console.warn("Clio OAuth callback completed, but current-user verification failed.");
-      return redirectToHome(request, {
+      return redirectToInvoices(request, {
         connection: "verification_failed",
       });
     }
@@ -56,12 +59,12 @@ export async function GET(request: NextRequest) {
         : "Clio OAuth callback failed with an unknown error.",
     );
 
-    return redirectToHome(request, {
+    return redirectToInvoices(request, {
       connection: "failed",
     });
   }
 
-  return redirectToHome(request, {
+  return redirectToInvoices(request, {
     connection: "connected",
   });
 }
