@@ -1,6 +1,6 @@
 import "server-only";
 
-import { Document, Page, Text, renderToBuffer } from "@react-pdf/renderer";
+import { Document, Page, Text, pdf } from "@react-pdf/renderer";
 import type { InvoiceDocumentData } from "@/lib/invoice-document";
 import {
   InvoicePdfClosingBlocks,
@@ -46,6 +46,7 @@ function InvoicePdfDocument({ invoice }: InvoicePdfDocumentProps) {
 
 export async function renderInvoicePdf(
   invoice: InvoiceDocumentData,
-): Promise<Buffer> {
-  return renderToBuffer(<InvoicePdfDocument invoice={invoice} />);
+): Promise<ArrayBuffer> {
+  const blob = await pdf(<InvoicePdfDocument invoice={invoice} />).toBlob();
+  return blob.arrayBuffer();
 }
