@@ -265,9 +265,7 @@ export default async function InvoicesPage({ searchParams }: InvoicesPageProps) 
                     {selectedInvoice?.invoiceNumber ?? selectedBillId}
                   </p>
                 </div>
-                <div className="flex flex-wrap gap-3">
-                  <InvoicePdfActions billId={selectedBillId} />
-                </div>
+                {selectedInvoice ? <InvoicePdfActions invoice={selectedInvoice} /> : null}
               </div>
             ) : null}
 
