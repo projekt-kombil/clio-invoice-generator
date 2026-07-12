@@ -12,6 +12,8 @@
 
 # testing
 /coverage
+/playwright-report/
+/test-results/
 
 # next.js
 /.next/
@@ -19,10 +21,18 @@
 
 # production
 /build
+/dist
 
 # misc
 .DS_Store
 *.pem
+*.key
+*.cert
+*.crt
+pids
+*.pid
+*.seed
+*.pid.lock
 
 # debug
 npm-debug.log*
@@ -39,6 +49,11 @@ yarn-error.log*
 *.db-journal
 *.db-shm
 *.db-wal
+*.sqlite
+*.sqlite3
+*.sqlite-journal
+*.sqlite-shm
+*.sqlite-wal
 
 # vercel
 .vercel
@@ -46,12 +61,13 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+cloudflare-env.d.ts
 
 # OpenNext
-.open-next
+.open-next/
 
 # wrangler files
-.wrangler
+.wrangler/
 .dev.vars*
 !.dev.vars.example
 
