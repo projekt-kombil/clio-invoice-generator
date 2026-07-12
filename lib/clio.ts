@@ -76,7 +76,7 @@ export async function exchangeAuthorizationCode(code: string): Promise<void> {
     throw new Error("Clio did not return a refresh token.");
   }
 
-  saveClioTokens({
+  await saveClioTokens({
     accessToken: tokenResponse.access_token,
     refreshToken: tokenResponse.refresh_token,
     expiresAt: getTokenExpiry(tokenResponse.expires_in),
@@ -97,7 +97,7 @@ async function refreshAccessToken(refreshToken: string): Promise<string> {
 
   const nextRefreshToken = tokenResponse.refresh_token ?? refreshToken;
 
-  saveClioTokens({
+  await saveClioTokens({
     accessToken: tokenResponse.access_token,
     refreshToken: nextRefreshToken,
     expiresAt: getTokenExpiry(tokenResponse.expires_in),
@@ -107,7 +107,7 @@ async function refreshAccessToken(refreshToken: string): Promise<string> {
 }
 
 export async function getValidClioAccessToken(): Promise<string | null> {
-  const tokens = loadClioTokens();
+  const tokens = await loadClioTokens();
 
   if (!tokens) {
     return null;
@@ -120,7 +120,7 @@ export async function getValidClioAccessToken(): Promise<string | null> {
   try {
     return await refreshAccessToken(tokens.refreshToken);
   } catch {
-    deleteClioTokens();
+    await deleteClioTokens();
     return null;
   }
 }
@@ -148,7 +148,7 @@ export async function clioApiFetch(
   });
 
   if (response.status === 401) {
-    deleteClioTokens();
+    await deleteClioTokens();
   }
 
   return response;
@@ -161,7 +161,7 @@ export async function getCurrentClioUser(): Promise<ClioCurrentUser | null> {
     console.warn(
       `Clio current-user request was rejected with status ${response.status}: ${await response.text()}`,
     );
-    deleteClioTokens();
+    await deleteClioTokens();
     return null;
   }
 
@@ -198,7 +198,7 @@ export async function getClioConnectionStatus(): Promise<ClioConnectionStatus> {
 }
 
 export async function disconnectClio(): Promise<void> {
-  const tokens = loadClioTokens();
+  const tokens = await loadClioTokens();
   const env = getAppEnv();
 
   if (tokens) {
@@ -217,5 +217,5 @@ export async function disconnectClio(): Promise<void> {
     }
   }
 
-  deleteClioTokens();
+  await deleteClioTokens();
 }
