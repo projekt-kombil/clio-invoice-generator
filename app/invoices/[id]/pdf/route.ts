@@ -19,7 +19,7 @@ function filenameForInvoice(invoiceNumber: string): string {
 }
 
 export async function GET(
-  _request: Request,
+  request: Request,
   { params }: InvoicePdfRouteContext,
 ) {
   const { id } = await params;
@@ -32,11 +32,14 @@ export async function GET(
   const invoice = toInvoiceDocumentData(bill);
   const pdf = await renderInvoicePdf(invoice);
   const filename = filenameForInvoice(invoice.invoiceNumber);
+  const disposition = new URL(request.url).searchParams.has("download")
+    ? "attachment"
+    : "inline";
 
   return new Response(new Uint8Array(pdf), {
     headers: {
       "Cache-Control": "no-store",
-      "Content-Disposition": `inline; filename="${filename}"`,
+      "Content-Disposition": `${disposition}; filename="${filename}"`,
       "Content-Type": "application/pdf",
     },
   });
