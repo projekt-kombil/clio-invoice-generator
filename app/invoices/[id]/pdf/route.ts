@@ -1,6 +1,6 @@
-import { renderInvoicePdf } from "@/components/invoice/InvoicePdfDocument";
 import { getBillDetail } from "@/lib/clio-bills";
 import { toInvoiceDocumentData } from "@/lib/invoice-document";
+import { renderInvoicePdf } from "@/lib/invoice-pdf-renderer";
 import { NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
