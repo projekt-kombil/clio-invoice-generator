@@ -1,76 +1,142 @@
 import { Image, Text, View } from "@react-pdf/renderer";
 import type { InvoiceDocumentData } from "@/lib/invoice-document";
 import {
-  formatInvoiceDiscount,
+  formatInvoiceDate,
   formatInvoiceMoney,
   formatInvoicePercent,
+  formatInvoiceQuantity,
 } from "@/lib/invoice-formatting";
+import { getInvoiceAccountStatementRows } from "@/components/invoice/account-statement";
+import { getInvoiceAttorneySummary } from "@/components/invoice/attorney-summary";
 import { imageSource } from "@/components/invoice/pdf/image-source";
-import { shouldShowInvoiceLineGroup } from "@/components/invoice/pdf/InvoicePdfTable";
 import { invoicePdfStyles as styles } from "@/components/invoice/pdf/styles";
+import { sumInvoiceLineItemTax } from "@/components/invoice/tax-summary";
 
 type InvoicePdfSectionProps = {
   invoice: InvoiceDocumentData;
 };
 
 function InvoicePdfAccountSummary({ invoice }: InvoicePdfSectionProps) {
+  const statementRows = getInvoiceAccountStatementRows(invoice);
+
   return (
     <View style={styles.totals}>
-      <Text style={styles.sectionLabel}>Account Summary</Text>
-      {shouldShowInvoiceLineGroup(invoice.services) ? (
-        <View style={styles.totalRow}>
-          <Text>Services Subtotal</Text>
-          <Text>{formatInvoiceMoney(invoice.services.subtotal, invoice)}</Text>
+      <Text style={styles.tableTitle}>Detailed Statement of Accounts</Text>
+      <View style={styles.accountStatementTable}>
+        <View style={styles.statementHeaderRow} wrap={false}>
+          <Text style={[styles.cell, styles.statementInvoiceNumberCell]}>
+            Invoice Number
+          </Text>
+          <Text style={[styles.cell, styles.statementDueOnCell]}>Due On</Text>
+          <Text style={[styles.cell, styles.statementMoneyCell]}>
+            Amount Due ({invoice.firm.currencyCode})
+          </Text>
+          <Text style={[styles.cell, styles.statementMoneyCell]}>
+            Payments Received ({invoice.firm.currencyCode})
+          </Text>
+          <Text style={[styles.cell, styles.statementMoneyCell]}>
+            Balance Due ({invoice.firm.currencyCode})
+          </Text>
         </View>
-      ) : null}
-      {shouldShowInvoiceLineGroup(invoice.expenses) ? (
-        <View style={styles.totalRow}>
-          <Text>Expenses Subtotal</Text>
-          <Text>{formatInvoiceMoney(invoice.expenses.subtotal, invoice)}</Text>
-        </View>
-      ) : null}
-      {invoice.discount ? (
-        <View style={styles.totalRow}>
-          <Text>Discount</Text>
-          <Text>{formatInvoiceDiscount(invoice.discount, invoice)}</Text>
-        </View>
-      ) : null}
-      <View style={styles.totalRow}>
-        <Text>Tax Rate</Text>
-        <Text>{formatInvoicePercent(invoice.taxRate)}</Text>
-      </View>
-      <View style={styles.totalRow}>
-        <Text>Tax Amount</Text>
-        <Text>{formatInvoiceMoney(invoice.tax, invoice)}</Text>
-      </View>
-      {invoice.accountSummary.interest ? (
-        <View style={styles.totalRow}>
-          <Text>Interest</Text>
-          <Text>{formatInvoiceMoney(invoice.accountSummary.interest, invoice)}</Text>
-        </View>
-      ) : null}
-      <View style={styles.totalRow}>
-        <Text>Total</Text>
-        <Text>{formatInvoiceMoney(invoice.total, invoice)}</Text>
-      </View>
-      <View style={styles.totalRow}>
-        <Text>Paid</Text>
-        <Text>{formatInvoiceMoney(invoice.paid, invoice)}</Text>
-      </View>
-      <View style={styles.balanceRow}>
-        <Text>Balance Due</Text>
-        <Text>{formatInvoiceMoney(invoice.balance, invoice)}</Text>
+        {statementRows.map((row) =>
+          row.kind === "section" ? (
+            <View key={row.id} style={styles.statementSectionRow} wrap={false}>
+              <Text>{row.label}</Text>
+            </View>
+          ) : row.kind === "outstanding" || row.kind === "total" ? (
+            <View
+              key={row.id}
+              style={
+                row.kind === "total"
+                  ? styles.statementBalanceRow
+                  : styles.statementSubtotalRow
+              }
+              wrap={false}
+            >
+              <Text style={[styles.cell, styles.statementSummaryLabelCell]}>
+                {row.label}
+              </Text>
+              <Text style={[styles.cell, styles.statementMoneyCell]}>
+                {row.value}
+              </Text>
+            </View>
+          ) : (
+            <View
+              key={row.id}
+              style={styles.statementLineRow}
+              wrap={false}
+            >
+              <Text style={[styles.cell, styles.statementInvoiceNumberCell]}>
+                {row.invoiceNumber}
+              </Text>
+              <Text style={[styles.cell, styles.statementDueOnCell]}>
+                {formatInvoiceDate(row.dueAt ?? null)}
+              </Text>
+              <Text style={[styles.cell, styles.statementMoneyCell]}>
+                {row.amountDue}
+              </Text>
+              <Text style={[styles.cell, styles.statementMoneyCell]}>
+                {row.paymentsReceived}
+              </Text>
+              <Text style={[styles.cell, styles.statementMoneyCell]}>
+                {row.balanceDue}
+              </Text>
+            </View>
+          ),
+        )}
       </View>
     </View>
   );
 }
 
 export function InvoicePdfClosingBlocks({ invoice }: InvoicePdfSectionProps) {
+  const attorneySummary = getInvoiceAttorneySummary(invoice);
+
   return (
     <>
       <View style={styles.matterStrip} wrap={false}>
-        <Text style={styles.sectionLabel}>Attorney Table</Text>
-        {invoice.attorneys.length > 0 ? (
+        <Text style={styles.tableTitle}>Attorney Summary</Text>
+        {attorneySummary.length > 0 ? (
+          <View style={styles.attorneySummaryTable}>
+            <View style={styles.attorneySummaryHeader} wrap={false}>
+              <Text style={[styles.cell, styles.attorneySummaryNameCell]}>
+                Attorney
+              </Text>
+              <Text style={[styles.cell, styles.attorneySummaryEntriesCell]}>
+                Entries
+              </Text>
+              <Text style={[styles.cell, styles.attorneySummaryQuantityCell]}>
+                Quantity
+              </Text>
+              <Text style={[styles.cell, styles.attorneySummaryTotalCell]}>
+                Total ({invoice.firm.currencyCode})
+              </Text>
+            </View>
+            {attorneySummary.map((attorney, index) => (
+              <View
+                key={attorney.name}
+                style={[
+                  styles.attorneySummaryRow,
+                  index % 2 === 1 ? styles.tableRowAlt : {},
+                ]}
+                wrap={false}
+              >
+                <Text style={[styles.cell, styles.attorneySummaryNameCell]}>
+                  {attorney.name}
+                </Text>
+                <Text style={[styles.cell, styles.attorneySummaryEntriesCell]}>
+                  {attorney.entries}
+                </Text>
+                <Text style={[styles.cell, styles.attorneySummaryQuantityCell]}>
+                  {formatInvoiceQuantity(attorney.quantity)}
+                </Text>
+                <Text style={[styles.cell, styles.attorneySummaryTotalCell]}>
+                  {formatInvoiceMoney(attorney.total, invoice)}
+                </Text>
+              </View>
+            ))}
+          </View>
+        ) : invoice.attorneys.length > 0 ? (
           invoice.attorneys.map((attorney) => (
             <Text key={attorney.name}>
               {attorney.name}
@@ -83,34 +149,88 @@ export function InvoicePdfClosingBlocks({ invoice }: InvoicePdfSectionProps) {
           </Text>
         )}
       </View>
+    </>
+  );
+}
 
+export function InvoicePdfOverallTotal({ invoice }: InvoicePdfSectionProps) {
+  const servicesTax = sumInvoiceLineItemTax(invoice.services.items);
+
+  return (
+    <View style={styles.overallTotalSection} wrap={false}>
+      <Text style={styles.tableTitle}>Invoice Total</Text>
+      <View style={styles.overallTotalLineRow}>
+        <Text>Subtotal ({invoice.firm.currencyCode})</Text>
+        <Text>{formatInvoiceMoney(invoice.subtotal, invoice)}</Text>
+      </View>
+      <View style={styles.overallTotalLineRow}>
+        <Text>
+          Tax
+          {invoice.taxRate !== null
+            ? ` (${formatInvoicePercent(invoice.taxRate)})`
+            : ""}{" "}
+          ({invoice.firm.currencyCode})
+        </Text>
+        <Text>{formatInvoiceMoney(servicesTax, invoice)}</Text>
+      </View>
+      <View style={styles.overallTotalRow}>
+        <Text>Total ({invoice.firm.currencyCode})</Text>
+        <Text>{formatInvoiceMoney(invoice.total, invoice)}</Text>
+      </View>
+    </View>
+  );
+}
+
+export function InvoicePdfPaymentBlocks({ invoice }: InvoicePdfSectionProps) {
+  return (
+    <>
       <View style={styles.matterStrip} wrap={false}>
         <Text style={styles.sectionLabel}>Lawyer Responsible E-Signature</Text>
-        {imageSource(invoice.responsibleAttorneySignatureImage) ? (
-          // eslint-disable-next-line jsx-a11y/alt-text
-          <Image
-            src={imageSource(invoice.responsibleAttorneySignatureImage) ?? ""}
-            style={styles.signatureImage}
-          />
-        ) : null}
-        <Text>
-          {invoice.responsibleAttorneySignature ?? "Signature pending."}
+        <View style={styles.signatureBox}>
+          {imageSource(invoice.responsibleAttorneySignatureImage) ? (
+            // eslint-disable-next-line jsx-a11y/alt-text
+            <Image
+              src={imageSource(invoice.responsibleAttorneySignatureImage) ?? ""}
+              style={styles.signatureImage}
+            />
+          ) : null}
+          <Text style={styles.signatureText}>
+            {invoice.responsibleAttorneySignature ?? "Signature pending."}
+          </Text>
+        </View>
+      </View>
+
+      <View style={styles.paymentDetails} wrap={false}>
+        <Text style={styles.paymentInstruction}>
+          Please pay within 14 days by direct deposit in Jema Lawyers Bank Account
+          as detailed:
         </Text>
+        <View style={styles.paymentBankGrid}>
+          {invoice.firm.bankAccounts.map((account) => (
+            <View key={account.accountNumber} style={styles.paymentBankColumn}>
+              <Text style={styles.tableTitle}>{account.bankName}</Text>
+              <View style={styles.paymentBankRow}>
+                <Text style={styles.paymentBankLabel}>Account Name</Text>
+                <Text style={styles.paymentBankValue}>{account.accountName}</Text>
+              </View>
+              <View style={styles.paymentBankRow}>
+                <Text style={styles.paymentBankLabel}>Branch</Text>
+                <Text style={styles.paymentBankValue}>{account.branch}</Text>
+              </View>
+              <View style={styles.paymentBankRow}>
+                <Text style={styles.paymentBankLabel}>BSB No</Text>
+                <Text style={styles.paymentBankValue}>{account.bsbNumber}</Text>
+              </View>
+              <View style={styles.paymentBankRow}>
+                <Text style={styles.paymentBankLabel}>Account Number</Text>
+                <Text style={styles.paymentBankValue}>{account.accountNumber}</Text>
+              </View>
+            </View>
+          ))}
+        </View>
       </View>
 
       <View style={styles.bottomGrid} wrap={false}>
-        <View style={styles.paymentBlock}>
-          <Text style={styles.sectionLabel}>Firm Bank Account Details</Text>
-          {invoice.firm.bankAccountLines.map((line) => (
-            <Text key={line} style={styles.mutedText}>
-              {line}
-            </Text>
-          ))}
-          <Text style={styles.mutedText}>
-            Please reference invoice #{invoice.invoiceNumber}.
-          </Text>
-        </View>
-
         <InvoicePdfAccountSummary invoice={invoice} />
       </View>
     </>

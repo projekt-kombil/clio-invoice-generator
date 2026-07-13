@@ -1,6 +1,7 @@
 import { Image, Text, View } from "@react-pdf/renderer";
 import type { InvoiceDocumentData } from "@/lib/invoice-document";
 import { formatInvoiceDate } from "@/lib/invoice-formatting";
+import { getInvoiceLegalTeam } from "@/components/invoice/attorney-summary";
 import { imageSource } from "@/components/invoice/pdf/image-source";
 import { invoicePdfStyles as styles } from "@/components/invoice/pdf/styles";
 
@@ -9,6 +10,8 @@ type InvoicePdfSectionProps = {
 };
 
 export function InvoicePdfHeader({ invoice }: InvoicePdfSectionProps) {
+  const legalTeam = getInvoiceLegalTeam(invoice);
+
   return (
     <View style={styles.header}>
       <View style={styles.brand}>
@@ -23,69 +26,62 @@ export function InvoicePdfHeader({ invoice }: InvoicePdfSectionProps) {
             <Text>{invoice.firm.logoInitials}</Text>
           </View>
         )}
-        <View>
-          <Text style={styles.firmName}>{invoice.firm.name}</Text>
+        <View style={styles.firmAddress}>
           {invoice.firm.addressLines.map((line) => (
             <Text key={line} style={styles.mutedText}>
               {line}
             </Text>
           ))}
-          <Text style={styles.mutedText}>
-            {invoice.firm.taxIdLabel}: {invoice.firm.taxId}
-          </Text>
+        </View>
+        <View style={styles.clientAddress}>
+          <Text style={styles.sectionLabel}>Client Address</Text>
+          <Text style={styles.primaryText}>{invoice.client.name}</Text>
+          {invoice.client.addressLines.map((line) => (
+            <Text key={line} style={styles.mutedText}>
+              {line}
+            </Text>
+          ))}
         </View>
       </View>
       <View style={styles.invoiceTitleBlock}>
+        <View style={styles.headerLegalTeam}>
+          <Text style={styles.headerLegalLabel}>Principal</Text>
+          <Text style={styles.headerLegalValueText}>{legalTeam.principal}</Text>
+          <Text style={styles.headerLegalLabel}>Lawyers</Text>
+          {legalTeam.lawyers.length > 0 ? (
+            legalTeam.lawyers.map((lawyer) => (
+              <Text key={lawyer} style={styles.headerLegalValueText}>
+                {lawyer}
+              </Text>
+            ))
+          ) : (
+            <Text style={styles.headerLegalValueText}>Pending</Text>
+          )}
+        </View>
+
         <Text style={styles.kicker}>Tax Invoice</Text>
-        <Text style={styles.title}>Invoice</Text>
-        <Text style={styles.invoiceNumber}>#{invoice.invoiceNumber}</Text>
-      </View>
-    </View>
-  );
-}
-
-export function InvoicePdfSummary({ invoice }: InvoicePdfSectionProps) {
-  return (
-    <View style={styles.summaryGrid} wrap={false}>
-      <View style={styles.infoBox}>
-        <Text style={styles.sectionLabel}>Bill To</Text>
-        <Text style={styles.primaryText}>{invoice.client.name}</Text>
-        {invoice.client.addressLines.map((line) => (
-          <Text key={line} style={styles.mutedText}>
-            {line}
-          </Text>
-        ))}
-      </View>
-
-      <View style={styles.infoBox}>
-        <Text style={styles.sectionLabel}>Invoice Details</Text>
-        <View style={styles.detailRow}>
-          <Text style={styles.detailLabel}>Invoice</Text>
-          <Text style={styles.detailValue}>#{invoice.invoiceNumber}</Text>
-        </View>
-        <View style={styles.detailRow}>
-          <Text style={styles.detailLabel}>Date</Text>
-          <Text style={styles.detailValue}>
-            {formatInvoiceDate(invoice.issuedAt)}
-          </Text>
-        </View>
-        <View style={styles.detailRow}>
-          <Text style={styles.detailLabel}>Due</Text>
-          <Text style={styles.detailValue}>{formatInvoiceDate(invoice.dueAt)}</Text>
-        </View>
-        <View style={styles.detailRow}>
-          <Text style={styles.detailLabel}>Reference</Text>
-          <Text style={styles.detailValue}>{invoice.reference ?? ""}</Text>
-        </View>
-        <View style={styles.detailRow}>
-          <Text style={styles.detailLabel}>Matter</Text>
-          <Text style={styles.detailValue}>
-            {invoice.matter.description ?? ""}
-          </Text>
-        </View>
-        <View style={styles.detailRow}>
-          <Text style={styles.detailLabel}>Matter No.</Text>
-          <Text style={styles.detailValue}>{invoice.matter.number ?? ""}</Text>
+        <Text style={styles.invoiceTaxId}>
+          {invoice.firm.taxIdLabel}: {invoice.firm.taxId}
+        </Text>
+        <View style={styles.titleMeta}>
+          <View style={styles.titleMetaRow}>
+            <Text style={styles.titleMetaLabel}>Invoice #</Text>
+            <Text style={styles.titleMetaValue}>{invoice.invoiceNumber}</Text>
+          </View>
+          <View style={styles.titleMetaRow}>
+            <Text style={styles.titleMetaLabel}>Date</Text>
+            <Text style={styles.titleMetaValue}>
+              {formatInvoiceDate(invoice.issuedAt)}
+            </Text>
+          </View>
+          <View style={styles.titleMetaRow}>
+            <Text style={styles.titleMetaLabel}>Due On</Text>
+            <Text style={styles.titleMetaValue}>{formatInvoiceDate(invoice.dueAt)}</Text>
+          </View>
+          <View style={styles.titleMetaRow}>
+            <Text style={styles.titleMetaLabel}>Our Ref</Text>
+            <Text style={styles.titleMetaValue}>{invoice.reference ?? ""}</Text>
+          </View>
         </View>
       </View>
     </View>
@@ -94,14 +90,11 @@ export function InvoicePdfSummary({ invoice }: InvoicePdfSectionProps) {
 
 export function InvoicePdfSubject({ invoice }: InvoicePdfSectionProps) {
   return (
-    <View style={styles.matterStrip} wrap={false}>
-      <Text style={styles.sectionLabel}>Re / Subject</Text>
-      <Text style={styles.matterTitle}>
+    <Text style={styles.reLine}>
+      <Text style={styles.reLineLabel}>Re: </Text>
+      <Text style={styles.reLineSubject}>
         {invoice.subject ?? invoice.matter.description ?? "Subject details pending"}
       </Text>
-      {invoice.matter.number ? (
-        <Text style={styles.mutedText}>{invoice.matter.number}</Text>
-      ) : null}
-    </View>
+    </Text>
   );
 }

@@ -1,11 +1,14 @@
 import type { InvoiceDocumentData } from "@/lib/invoice-document";
 import { formatInvoiceDate } from "@/lib/invoice-formatting";
+import { getInvoiceLegalTeam } from "@/components/invoice/attorney-summary";
 
 type InvoicePreviewSectionProps = {
   invoice: InvoiceDocumentData;
 };
 
 export function InvoicePreviewHeader({ invoice }: InvoicePreviewSectionProps) {
+  const legalTeam = getInvoiceLegalTeam(invoice);
+
   return (
     <header className="invoice-header">
       <div className="invoice-brand">
@@ -19,75 +22,67 @@ export function InvoicePreviewHeader({ invoice }: InvoicePreviewSectionProps) {
         ) : (
           <div className="invoice-logo-mark">{invoice.firm.logoInitials}</div>
         )}
-        <div>
-          <p className="firm-name">{invoice.firm.name}</p>
+        <div className="invoice-firm-address">
           {invoice.firm.addressLines.map((line) => (
             <p key={line}>{line}</p>
           ))}
-          <p>
-            {invoice.firm.taxIdLabel}: {invoice.firm.taxId}
-          </p>
+        </div>
+        <div className="invoice-client-address">
+          <h2>Client Address</h2>
+          <p className="summary-primary">{invoice.client.name}</p>
+          {invoice.client.addressLines.map((line) => (
+            <p key={line}>{line}</p>
+          ))}
         </div>
       </div>
       <div className="invoice-title-block">
+        <div className="invoice-header-legal-team">
+          <p className="invoice-header-legal-label">Principal</p>
+          <p>{legalTeam.principal}</p>
+          <p className="invoice-header-legal-label">Lawyers</p>
+          <div className="invoice-header-lawyer-list">
+            {legalTeam.lawyers.length > 0 ? (
+              legalTeam.lawyers.map((lawyer) => <p key={lawyer}>{lawyer}</p>)
+            ) : (
+              <p>Pending</p>
+            )}
+          </div>
+        </div>
+
         <p className="invoice-kicker">Tax Invoice</p>
-        <h1>Invoice</h1>
-        <p className="invoice-number">#{invoice.invoiceNumber}</p>
-      </div>
-    </header>
-  );
-}
-
-export function InvoicePreviewSummary({ invoice }: InvoicePreviewSectionProps) {
-  return (
-    <section className="invoice-summary-grid">
-      <div className="invoice-info-card">
-        <h2>Bill To</h2>
-        <p className="summary-primary">{invoice.client.name}</p>
-        {invoice.client.addressLines.map((line) => (
-          <p key={line}>{line}</p>
-        ))}
-      </div>
-
-      <div className="invoice-info-card invoice-information">
-        <h2>Invoice Details</h2>
-        <dl>
+        <p className="invoice-tax-id">
+          {invoice.firm.taxIdLabel}: {invoice.firm.taxId}
+        </p>
+        <dl className="invoice-title-meta">
           <div>
-            <dt>Invoice</dt>
-            <dd>#{invoice.invoiceNumber}</dd>
+            <dt>Invoice #</dt>
+            <dd>{invoice.invoiceNumber}</dd>
           </div>
           <div>
             <dt>Date</dt>
             <dd>{formatInvoiceDate(invoice.issuedAt)}</dd>
           </div>
           <div>
-            <dt>Due</dt>
+            <dt>Due On</dt>
             <dd>{formatInvoiceDate(invoice.dueAt)}</dd>
           </div>
           <div>
-            <dt>Reference</dt>
+            <dt>Our Ref</dt>
             <dd>{invoice.reference ?? ""}</dd>
-          </div>
-          <div>
-            <dt>Matter</dt>
-            <dd>{invoice.matter.description ?? ""}</dd>
-          </div>
-          <div>
-            <dt>Matter No.</dt>
-            <dd>{invoice.matter.number ?? ""}</dd>
           </div>
         </dl>
       </div>
-    </section>
+    </header>
   );
 }
 
 export function InvoicePreviewSubject({ invoice }: InvoicePreviewSectionProps) {
   return (
-    <section className="invoice-section invoice-matter-strip">
-      <h2>Re / Subject</h2>
-      <p>{invoice.subject ?? invoice.matter.description ?? "Subject details pending"}</p>
-      {invoice.matter.number ? <span>{invoice.matter.number}</span> : null}
-    </section>
+    <p className="invoice-re-line">
+      <strong>Re:</strong>{" "}
+      <span className="invoice-re-subject">
+        {invoice.subject ?? invoice.matter.description ?? "Subject details pending"}
+      </span>
+    </p>
   );
 }

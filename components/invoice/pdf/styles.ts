@@ -1,22 +1,32 @@
 import { StyleSheet } from "@react-pdf/renderer";
 
+import { invoiceTheme } from "@/lib/invoice-theme";
+
+const JEMA_ACCENT = invoiceTheme.accent;
+const JEMA_INK = invoiceTheme.ink;
+const JEMA_MUTED = invoiceTheme.muted;
+const JEMA_NAVY = invoiceTheme.navy;
+const JEMA_RULE = invoiceTheme.rule;
+const JEMA_SOFT = invoiceTheme.soft;
+const JEMA_SOFT_STRONG = invoiceTheme.softStrong;
+
 export const invoicePdfStyles = StyleSheet.create({
   page: {
     position: "relative",
-    paddingHorizontal: 42,
-    paddingTop: 42,
-    paddingBottom: 42,
+    paddingHorizontal: 42.5,
+    paddingTop: 42.5,
+    paddingBottom: 42.5,
     fontFamily: "Helvetica",
-    fontSize: 9,
-    color: "#111827",
+    fontSize: 8,
+    color: JEMA_INK,
     backgroundColor: "#ffffff",
   },
   watermark: {
     position: "absolute",
     top: "42%",
     left: 76,
-    color: "#9ca3af",
-    opacity: 0.16,
+    color: JEMA_ACCENT,
+    opacity: 0.14,
     fontSize: 92,
     fontWeight: 700,
     textTransform: "uppercase",
@@ -25,13 +35,11 @@ export const invoicePdfStyles = StyleSheet.create({
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
-    paddingBottom: 24,
-    borderBottomWidth: 1,
-    borderBottomColor: "#d1d5db",
+    paddingBottom: 22.7,
   },
   brand: {
-    flexDirection: "row",
-    width: "55%",
+    flexDirection: "column",
+    width: 351.5,
   },
   logo: {
     width: 46,
@@ -39,15 +47,16 @@ export const invoicePdfStyles = StyleSheet.create({
     marginRight: 12,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#111827",
-    color: "#ffffff",
+    borderWidth: 1,
+    borderColor: JEMA_NAVY,
+    color: JEMA_NAVY,
     fontSize: 14,
     fontWeight: 700,
   },
   logoImage: {
-    width: 46,
-    height: 46,
-    marginRight: 12,
+    width: 351.5,
+    maxHeight: 68,
+    marginBottom: 14.2,
     objectFit: "contain",
   },
   firmName: {
@@ -56,48 +65,94 @@ export const invoicePdfStyles = StyleSheet.create({
     fontWeight: 700,
   },
   mutedText: {
-    color: "#6b7280",
+    color: JEMA_MUTED,
     lineHeight: 1.45,
+  },
+  firmAddress: {
+    marginTop: 0,
+  },
+  clientAddress: {
+    marginTop: 19.8,
   },
   invoiceTitleBlock: {
     alignItems: "flex-end",
+    width: 153,
+  },
+  headerLegalTeam: {
+    marginTop: 34,
+    marginBottom: 22.7,
+    width: 124.7,
+  },
+  headerLegalLabel: {
+    color: JEMA_INK,
+    fontSize: 8,
+    fontWeight: 700,
+    marginTop: 3,
+    textAlign: "right",
+  },
+  headerLegalValueText: {
+    color: JEMA_INK,
+    fontSize: 8,
+    lineHeight: 1.35,
+    textAlign: "right",
   },
   kicker: {
-    marginBottom: 5,
-    color: "#6b7280",
-    fontSize: 8,
+    marginBottom: 2,
+    color: JEMA_ACCENT,
+    fontSize: 10,
+    fontWeight: 700,
     textTransform: "uppercase",
   },
-  title: {
-    fontSize: 28,
+  invoiceTaxId: {
+    marginTop: 1,
+    color: JEMA_NAVY,
+    fontSize: 8,
     fontWeight: 700,
   },
-  invoiceNumber: {
-    marginTop: 5,
-    fontSize: 11,
-    color: "#374151",
+  titleMeta: {
+    marginTop: 7.5,
+    width: 153,
+  },
+  titleMetaRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 2.3,
+  },
+  titleMetaLabel: {
+    color: JEMA_INK,
+    fontSize: 8,
+    fontWeight: 700,
+    width: 48,
+  },
+  titleMetaValue: {
+    color: JEMA_INK,
+    fontSize: 8,
+    width: 100,
+    textAlign: "right",
   },
   summaryGrid: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginTop: 28,
+    marginTop: 28.3,
   },
   infoBox: {
     width: "48%",
-    padding: 14,
+    minHeight: 107.7,
+    padding: 17,
     borderWidth: 1,
-    borderColor: "#e5e7eb",
+    borderColor: JEMA_RULE,
+    backgroundColor: JEMA_SOFT,
   },
   sectionLabel: {
     marginBottom: 8,
-    color: "#6b7280",
+    color: JEMA_NAVY,
     fontSize: 8,
     fontWeight: 700,
     textTransform: "uppercase",
   },
   primaryText: {
     marginBottom: 4,
-    fontSize: 12,
+    fontSize: 10,
     fontWeight: 700,
   },
   detailRow: {
@@ -106,60 +161,85 @@ export const invoicePdfStyles = StyleSheet.create({
     marginBottom: 6,
   },
   detailLabel: {
-    color: "#6b7280",
+    color: JEMA_MUTED,
   },
   detailValue: {
     maxWidth: "62%",
     textAlign: "right",
   },
+  reLine: {
+    marginTop: 17,
+    marginBottom: 5.7,
+    color: JEMA_INK,
+    fontWeight: 400,
+  },
+  reLineLabel: {
+    color: JEMA_NAVY,
+    fontSize: 8,
+    fontWeight: 700,
+    textTransform: "uppercase",
+  },
+  reLineSubject: {
+    color: JEMA_INK,
+    fontSize: 10,
+    fontWeight: 700,
+  },
   matterStrip: {
-    marginTop: 20,
-    padding: 12,
-    backgroundColor: "#f3f4f6",
-    borderLeftWidth: 4,
-    borderLeftColor: "#111827",
+    marginTop: 19.8,
+    paddingHorizontal: 0,
+    paddingVertical: 0,
   },
   matterTitle: {
-    marginBottom: 3,
+    color: JEMA_INK,
+    fontWeight: 400,
+  },
+  matterLabel: {
+    fontWeight: 700,
+  },
+  tableTitle: {
+    marginBottom: 5,
+    color: JEMA_ACCENT,
+    fontSize: 10,
     fontWeight: 700,
   },
   table: {
-    marginTop: 8,
-    borderWidth: 1,
-    borderColor: "#d1d5db",
+    marginTop: 0,
   },
   tableSection: {
-    marginTop: 22,
+    marginTop: 17,
   },
   tableHeader: {
     flexDirection: "row",
-    backgroundColor: "#111827",
-    color: "#ffffff",
+    backgroundColor: JEMA_SOFT_STRONG,
+    color: JEMA_NAVY,
     fontSize: 8,
     fontWeight: 700,
+    borderBottomWidth: 1,
+    borderBottomColor: JEMA_ACCENT,
   },
   tableRow: {
     flexDirection: "row",
-    borderTopWidth: 1,
-    borderTopColor: "#e5e7eb",
+    borderBottomWidth: 0.5,
+    borderBottomColor: JEMA_RULE,
+  },
+  tableRowAlt: {
+    backgroundColor: JEMA_SOFT,
   },
   cell: {
-    padding: 8,
+    paddingHorizontal: 3.8,
+    paddingVertical: 5.2,
   },
   dateCell: {
     width: "12%",
   },
-  typeCell: {
-    width: "12%",
-  },
   descriptionCell: {
-    width: "32%",
+    width: "40%",
   },
   attorneyCell: {
     width: "14%",
   },
   qtyCell: {
-    width: "10%",
+    width: "8%",
     textAlign: "right",
   },
   rateCell: {
@@ -167,67 +247,162 @@ export const invoicePdfStyles = StyleSheet.create({
     textAlign: "right",
   },
   amountCell: {
-    width: "12%",
+    width: "14%",
     textAlign: "right",
   },
   subtotalRow: {
     flexDirection: "row",
-    borderTopWidth: 1,
-    borderTopColor: "#d1d5db",
-    backgroundColor: "#f9fafb",
+    borderTopWidth: 0.5,
+    borderTopColor: JEMA_RULE,
+    borderBottomWidth: 0,
+    backgroundColor: "#ffffff",
+    fontWeight: 700,
+  },
+  taxRow: {
+    flexDirection: "row",
+    borderBottomWidth: 0.5,
+    borderBottomColor: JEMA_RULE,
+    backgroundColor: "#ffffff",
     fontWeight: 700,
   },
   subtotalLabelCell: {
-    width: "88%",
+    width: "86%",
     textAlign: "right",
+  },
+  lineDescription: {
+    fontWeight: 700,
   },
   lineType: {
     marginTop: 3,
-    color: "#6b7280",
+    color: JEMA_INK,
     fontSize: 8,
   },
   bottomGrid: {
-    flexDirection: "row",
-    justifyContent: "space-between",
     marginTop: 22,
   },
-  paymentBlock: {
-    width: "52%",
-    paddingTop: 4,
+  overallTotalSection: {
+    width: 215,
+    marginLeft: "auto",
+    marginTop: 17,
+  },
+  overallTotalLineRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingHorizontal: 8,
+    paddingVertical: 6,
+    borderBottomWidth: 1,
+    borderBottomColor: JEMA_RULE,
+    backgroundColor: "#ffffff",
+    color: JEMA_INK,
+    fontWeight: 700,
+  },
+  overallTotalRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingHorizontal: 8,
+    paddingVertical: 7,
+    backgroundColor: JEMA_NAVY,
+    color: "#ffffff",
+    fontSize: 10,
+    fontWeight: 700,
+  },
+  paymentDetails: {
+    marginTop: 22.7,
+  },
+  paymentInstruction: {
+    marginBottom: 14.2,
+    color: JEMA_INK,
+    fontWeight: 700,
+  },
+  paymentBankGrid: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  paymentBankColumn: {
+    width: "47%",
+  },
+  paymentBankRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 5.7,
+  },
+  paymentBankLabel: {
+    color: JEMA_INK,
+    fontWeight: 700,
+  },
+  paymentBankValue: {
+    color: JEMA_INK,
+    maxWidth: "58%",
+    textAlign: "right",
   },
   totals: {
-    width: "36%",
+    width: "100%",
   },
-  totalRow: {
+  accountStatementTable: {
+    borderWidth: 0,
+  },
+  statementHeaderRow: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    paddingVertical: 5,
+    backgroundColor: JEMA_SOFT_STRONG,
+    color: JEMA_NAVY,
+    fontSize: 8,
+    fontWeight: 700,
     borderBottomWidth: 1,
-    borderBottomColor: "#e5e7eb",
+    borderBottomColor: JEMA_ACCENT,
   },
-  balanceRow: {
-    marginTop: 5,
-    padding: 10,
+  statementLineRow: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    backgroundColor: "#111827",
+    borderBottomWidth: 0.5,
+    borderBottomColor: JEMA_RULE,
+  },
+  statementInvoiceNumberCell: {
+    width: "18%",
+  },
+  statementDueOnCell: {
+    width: "16%",
+  },
+  statementMoneyCell: {
+    width: "22%",
+    textAlign: "right",
+  },
+  statementSummaryLabelCell: {
+    width: "78%",
+    textAlign: "right",
+  },
+  statementSectionRow: {
+    paddingHorizontal: 8,
+    paddingVertical: 6,
+    backgroundColor: JEMA_SOFT_STRONG,
+    color: JEMA_NAVY,
+    fontSize: 8,
+    fontWeight: 700,
+  },
+  statementSubtotalRow: {
+    flexDirection: "row",
+    backgroundColor: "#ffffff",
+    borderBottomWidth: 0.5,
+    borderBottomColor: JEMA_RULE,
+    fontWeight: 700,
+  },
+  statementBalanceRow: {
+    flexDirection: "row",
+    backgroundColor: JEMA_NAVY,
     color: "#ffffff",
     fontSize: 11,
     fontWeight: 700,
   },
   footer: {
-    marginTop: 24,
+    marginTop: "auto",
     paddingTop: 8,
-    borderTopWidth: 1,
-    borderTopColor: "#e5e7eb",
-    color: "#6b7280",
+    color: JEMA_MUTED,
     fontSize: 8,
+    textAlign: "center",
   },
   pageNumber: {
     position: "absolute",
     right: 42,
     bottom: 24,
-    color: "#6b7280",
+    color: JEMA_MUTED,
     fontSize: 8,
     textAlign: "right",
   },
@@ -236,5 +411,48 @@ export const invoicePdfStyles = StyleSheet.create({
     height: 48,
     objectFit: "contain",
     marginBottom: 6,
+  },
+  signatureBox: {
+    width: 220,
+    minHeight: 48,
+    paddingBottom: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: JEMA_RULE,
+  },
+  signatureText: {
+    color: JEMA_INK,
+    fontWeight: 700,
+  },
+  attorneySummaryTable: {
+    borderWidth: 0,
+  },
+  attorneySummaryHeader: {
+    flexDirection: "row",
+    backgroundColor: JEMA_SOFT_STRONG,
+    color: JEMA_NAVY,
+    fontSize: 8,
+    fontWeight: 700,
+    borderBottomWidth: 1,
+    borderBottomColor: JEMA_ACCENT,
+  },
+  attorneySummaryRow: {
+    flexDirection: "row",
+    borderBottomWidth: 0.5,
+    borderBottomColor: JEMA_RULE,
+  },
+  attorneySummaryNameCell: {
+    width: "52%",
+  },
+  attorneySummaryEntriesCell: {
+    width: "14%",
+    textAlign: "right",
+  },
+  attorneySummaryQuantityCell: {
+    width: "14%",
+    textAlign: "right",
+  },
+  attorneySummaryTotalCell: {
+    width: "20%",
+    textAlign: "right",
   },
 });

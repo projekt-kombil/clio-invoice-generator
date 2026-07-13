@@ -1,5 +1,5 @@
 import type { InvoiceDocumentData } from "@/lib/invoice-document";
-import { shouldShowDraftWatermark } from "@/lib/invoice-document";
+import { getInvoiceStatusWatermark } from "@/lib/invoice-document";
 
 import {
   InvoicePreviewAttorneys,
@@ -7,9 +7,9 @@ import {
   InvoicePreviewFooter,
   InvoicePreviewHeader,
   InvoicePreviewItemsTable,
+  InvoicePreviewOverallTotal,
   InvoicePreviewSignature,
   InvoicePreviewSubject,
-  InvoicePreviewSummary,
 } from "@/components/invoice/preview";
 
 type InvoicePreviewProps = {
@@ -17,18 +17,24 @@ type InvoicePreviewProps = {
 };
 
 export function InvoicePreview({ invoice }: InvoicePreviewProps) {
+  const watermark = getInvoiceStatusWatermark(invoice);
+
   return (
     <article className="invoice-page bg-white text-slate-950">
-      {shouldShowDraftWatermark(invoice) ? (
+      {watermark ? (
         <div aria-hidden="true" className="invoice-watermark">
-          Draft
+          {watermark}
         </div>
       ) : null}
       <InvoicePreviewHeader invoice={invoice} />
-      <InvoicePreviewSummary invoice={invoice} />
       <InvoicePreviewSubject invoice={invoice} />
-      <InvoicePreviewItemsTable group={invoice.services} invoice={invoice} />
+      <InvoicePreviewItemsTable
+        group={invoice.services}
+        invoice={invoice}
+        showTax
+      />
       <InvoicePreviewItemsTable group={invoice.expenses} invoice={invoice} />
+      <InvoicePreviewOverallTotal invoice={invoice} />
       <InvoicePreviewAttorneys invoice={invoice} />
       <InvoicePreviewSignature invoice={invoice} />
       <InvoicePreviewBottom invoice={invoice} />
