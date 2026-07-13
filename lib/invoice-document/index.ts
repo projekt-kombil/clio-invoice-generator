@@ -1,5 +1,8 @@
 export { toInvoiceDocumentData } from "@/lib/invoice-document/mapper";
-export { shouldShowDraftWatermark } from "@/lib/invoice-document/status";
+export {
+  getInvoiceStatusWatermark,
+  shouldShowDraftWatermark,
+} from "@/lib/invoice-document/status";
 export type {
   InvoiceDocumentData,
   InvoiceLineItem,

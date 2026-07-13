@@ -1,24 +1,29 @@
 "use client";
 
-import { Document, Page, Text, pdf } from "@react-pdf/renderer";
+import { Document, Font, Page, Text, pdf } from "@react-pdf/renderer";
 import type { InvoiceDocumentData } from "@/lib/invoice-document";
 import {
   InvoicePdfClosingBlocks,
   InvoicePdfFooter,
   InvoicePdfHeader,
+  InvoicePdfOverallTotal,
   InvoicePdfPageNumber,
+  InvoicePdfPaymentBlocks,
   InvoicePdfSubject,
-  InvoicePdfSummary,
 } from "@/components/invoice/pdf/InvoicePdfSections";
 import { InvoicePdfTable } from "@/components/invoice/pdf/InvoicePdfTable";
 import { invoicePdfStyles as styles } from "@/components/invoice/pdf/styles";
-import { shouldShowDraftWatermark } from "@/lib/invoice-document";
+import { getInvoiceStatusWatermark } from "@/lib/invoice-document";
 
 type InvoicePdfDocumentProps = {
   invoice: InvoiceDocumentData;
 };
 
+Font.registerHyphenationCallback((word) => [word]);
+
 export function InvoicePdfDocument({ invoice }: InvoicePdfDocumentProps) {
+  const watermark = getInvoiceStatusWatermark(invoice);
+
   return (
     <Document
       author="Clio Invoice Generator"
@@ -26,18 +31,19 @@ export function InvoicePdfDocument({ invoice }: InvoicePdfDocumentProps) {
       title={`Invoice ${invoice.invoiceNumber}`}
     >
       <Page size="A4" style={styles.page}>
-        {shouldShowDraftWatermark(invoice) ? (
+        <InvoicePdfHeader invoice={invoice} />
+        <InvoicePdfSubject invoice={invoice} />
+        <InvoicePdfTable group={invoice.services} invoice={invoice} showTax />
+        <InvoicePdfTable group={invoice.expenses} invoice={invoice} />
+        <InvoicePdfOverallTotal invoice={invoice} />
+        <InvoicePdfClosingBlocks invoice={invoice} />
+        <InvoicePdfPaymentBlocks invoice={invoice} />
+        <InvoicePdfFooter invoice={invoice} />
+        {watermark ? (
           <Text fixed style={styles.watermark}>
-            Draft
+            {watermark}
           </Text>
         ) : null}
-        <InvoicePdfHeader invoice={invoice} />
-        <InvoicePdfSummary invoice={invoice} />
-        <InvoicePdfSubject invoice={invoice} />
-        <InvoicePdfTable group={invoice.services} invoice={invoice} />
-        <InvoicePdfTable group={invoice.expenses} invoice={invoice} />
-        <InvoicePdfClosingBlocks invoice={invoice} />
-        <InvoicePdfFooter invoice={invoice} />
         <InvoicePdfPageNumber />
       </Page>
     </Document>

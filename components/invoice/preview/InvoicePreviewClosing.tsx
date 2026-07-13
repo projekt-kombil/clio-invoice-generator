@@ -1,20 +1,47 @@
 import type { InvoiceDocumentData } from "@/lib/invoice-document";
 import {
-  formatInvoiceDiscount,
+  formatInvoiceDate,
   formatInvoiceMoney,
   formatInvoicePercent,
+  formatInvoiceQuantity,
 } from "@/lib/invoice-formatting";
+import { getInvoiceAccountStatementRows } from "@/components/invoice/account-statement";
+import { getInvoiceAttorneySummary } from "@/components/invoice/attorney-summary";
+import { sumInvoiceLineItemTax } from "@/components/invoice/tax-summary";
 
 type InvoicePreviewSectionProps = {
   invoice: InvoiceDocumentData;
 };
 
 export function InvoicePreviewAttorneys({ invoice }: InvoicePreviewSectionProps) {
+  const attorneySummary = getInvoiceAttorneySummary(invoice);
+
   return (
     <section className="invoice-section">
-      <h2>Attorney Table</h2>
-      {invoice.attorneys.length > 0 ? (
-        <table className="invoice-table">
+      <h2 className="invoice-table-title">Attorney Summary</h2>
+      {attorneySummary.length > 0 ? (
+        <table className="invoice-table invoice-attorney-summary-table">
+          <thead>
+            <tr>
+              <th>Attorney</th>
+              <th>Entries</th>
+              <th>Quantity</th>
+              <th>Total ({invoice.firm.currencyCode})</th>
+            </tr>
+          </thead>
+          <tbody>
+            {attorneySummary.map((attorney) => (
+              <tr key={attorney.name}>
+                <td>{attorney.name}</td>
+                <td>{attorney.entries}</td>
+                <td>{formatInvoiceQuantity(attorney.quantity)}</td>
+                <td>{formatInvoiceMoney(attorney.total, invoice)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      ) : invoice.attorneys.length > 0 ? (
+        <table className="invoice-table invoice-attorney-table">
           <tbody>
             {invoice.attorneys.map((attorney) => (
               <tr key={attorney.name}>
@@ -31,72 +58,134 @@ export function InvoicePreviewAttorneys({ invoice }: InvoicePreviewSectionProps)
   );
 }
 
+export function InvoicePreviewOverallTotal({
+  invoice,
+}: InvoicePreviewSectionProps) {
+  const servicesTax = sumInvoiceLineItemTax(invoice.services.items);
+
+  return (
+    <section className="invoice-section invoice-overall-total">
+      <h2 className="invoice-table-title">Invoice Total</h2>
+      <table className="invoice-table invoice-overall-total-table">
+        <tbody>
+          <tr>
+            <td>Subtotal ({invoice.firm.currencyCode})</td>
+            <td>{formatInvoiceMoney(invoice.subtotal, invoice)}</td>
+          </tr>
+          <tr>
+            <td>
+              Tax
+              {invoice.taxRate !== null
+                ? ` (${formatInvoicePercent(invoice.taxRate)})`
+                : ""}{" "}
+              ({invoice.firm.currencyCode})
+            </td>
+            <td>{formatInvoiceMoney(servicesTax, invoice)}</td>
+          </tr>
+          <tr>
+            <td>Total ({invoice.firm.currencyCode})</td>
+            <td>{formatInvoiceMoney(invoice.total, invoice)}</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  );
+}
+
 export function InvoicePreviewSignature({ invoice }: InvoicePreviewSectionProps) {
   return (
     <section className="invoice-section">
       <h2>Lawyer Responsible E-Signature</h2>
-      {invoice.responsibleAttorneySignatureImage ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          alt="Responsible attorney signature"
-          src={invoice.responsibleAttorneySignatureImage}
-        />
-      ) : null}
-      <p>{invoice.responsibleAttorneySignature ?? "Signature pending."}</p>
+      <div className="invoice-signature-box">
+        {invoice.responsibleAttorneySignatureImage ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            alt="Responsible attorney signature"
+            src={invoice.responsibleAttorneySignatureImage}
+          />
+        ) : null}
+        <p>{invoice.responsibleAttorneySignature ?? "Signature pending."}</p>
+      </div>
+      <InvoicePreviewPaymentDetails invoice={invoice} />
+    </section>
+  );
+}
+
+function InvoicePreviewPaymentDetails({ invoice }: InvoicePreviewSectionProps) {
+  return (
+    <section className="payment-details">
+      <p className="payment-instruction">
+        Please pay within 14 days by direct deposit in Jema Lawyers Bank Account
+        as detailed:
+      </p>
+      <div className="payment-bank-grid">
+        {invoice.firm.bankAccounts.map((account) => (
+          <div className="payment-bank-column" key={account.accountNumber}>
+            <h2>{account.bankName}</h2>
+            <dl>
+              <div>
+                <dt>Account Name</dt>
+                <dd>{account.accountName}</dd>
+              </div>
+              <div>
+                <dt>Branch</dt>
+                <dd>{account.branch}</dd>
+              </div>
+              <div>
+                <dt>BSB No</dt>
+                <dd>{account.bsbNumber}</dd>
+              </div>
+              <div>
+                <dt>Account Number</dt>
+                <dd>{account.accountNumber}</dd>
+              </div>
+            </dl>
+          </div>
+        ))}
+      </div>
     </section>
   );
 }
 
 function InvoicePreviewTotals({ invoice }: InvoicePreviewSectionProps) {
+  const statementRows = getInvoiceAccountStatementRows(invoice);
+
   return (
-    <section className="invoice-totals">
-      <h2>Account Summary</h2>
-      <dl>
-        {invoice.services.items.length > 0 ? (
-          <div>
-            <dt>Services Subtotal</dt>
-            <dd>{formatInvoiceMoney(invoice.services.subtotal, invoice)}</dd>
-          </div>
-        ) : null}
-        {invoice.expenses.items.length > 0 ? (
-          <div>
-            <dt>Expenses Subtotal</dt>
-            <dd>{formatInvoiceMoney(invoice.expenses.subtotal, invoice)}</dd>
-          </div>
-        ) : null}
-        {invoice.discount ? (
-          <div>
-            <dt>Discount</dt>
-            <dd>{formatInvoiceDiscount(invoice.discount, invoice)}</dd>
-          </div>
-        ) : null}
-        <div>
-          <dt>Tax Rate</dt>
-          <dd>{formatInvoicePercent(invoice.taxRate)}</dd>
-        </div>
-        <div>
-          <dt>Tax Amount</dt>
-          <dd>{formatInvoiceMoney(invoice.tax, invoice)}</dd>
-        </div>
-        {invoice.accountSummary.interest ? (
-          <div>
-            <dt>Interest</dt>
-            <dd>{formatInvoiceMoney(invoice.accountSummary.interest, invoice)}</dd>
-          </div>
-        ) : null}
-        <div>
-          <dt>Total</dt>
-          <dd>{formatInvoiceMoney(invoice.total, invoice)}</dd>
-        </div>
-        <div>
-          <dt>Paid</dt>
-          <dd>{formatInvoiceMoney(invoice.paid, invoice)}</dd>
-        </div>
-        <div className="balance-row">
-          <dt>Balance Due</dt>
-          <dd>{formatInvoiceMoney(invoice.balance, invoice)}</dd>
-        </div>
-      </dl>
+    <section className="invoice-account-statement">
+      <h2 className="invoice-table-title">Detailed Statement of Accounts</h2>
+      <table className="invoice-table invoice-account-statement-table">
+        <thead>
+          <tr>
+            <th>Invoice Number</th>
+            <th>Due On</th>
+            <th>Amount Due ({invoice.firm.currencyCode})</th>
+            <th>Payments Received ({invoice.firm.currencyCode})</th>
+            <th>Balance Due ({invoice.firm.currencyCode})</th>
+          </tr>
+        </thead>
+        <tbody>
+          {statementRows.map((row) =>
+            row.kind === "section" ? (
+              <tr className="statement-section-row" key={row.id}>
+                <td colSpan={5}>{row.label}</td>
+              </tr>
+            ) : row.kind === "outstanding" || row.kind === "total" ? (
+              <tr className={`statement-${row.kind}-row`} key={row.id}>
+                <td colSpan={4}>{row.label}</td>
+                <td>{row.value}</td>
+              </tr>
+            ) : (
+              <tr className="statement-invoice-row" key={row.id}>
+                <td>{row.invoiceNumber}</td>
+                <td>{formatInvoiceDate(row.dueAt ?? null)}</td>
+                <td>{row.amountDue}</td>
+                <td>{row.paymentsReceived}</td>
+                <td>{row.balanceDue}</td>
+              </tr>
+            ),
+          )}
+        </tbody>
+      </table>
     </section>
   );
 }
@@ -104,14 +193,6 @@ function InvoicePreviewTotals({ invoice }: InvoicePreviewSectionProps) {
 export function InvoicePreviewBottom({ invoice }: InvoicePreviewSectionProps) {
   return (
     <div className="invoice-bottom-grid">
-      <section className="payment-block">
-        <h2>Firm Bank Account Details</h2>
-        {invoice.firm.bankAccountLines.map((line) => (
-          <p key={line}>{line}</p>
-        ))}
-        <p>Please reference invoice #{invoice.invoiceNumber}.</p>
-      </section>
-
       <InvoicePreviewTotals invoice={invoice} />
     </div>
   );

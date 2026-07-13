@@ -188,5 +188,7 @@ export function normalizeBillDetail(
       .map(normalizeMatter)
       .filter((matter) => matter !== null),
     lineItems,
+    accountStatementEntries: [],
+    detailedStatementInvoices: [],
   };
 }

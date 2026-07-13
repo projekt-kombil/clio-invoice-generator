@@ -8,12 +8,8 @@ type InvoicePdfActionsProps = {
   invoice: InvoiceDocumentData;
 };
 
-type PdfAction = "open" | "download";
-
-const openPdfClassName =
-  "inline-flex h-11 items-center justify-center rounded-md bg-slate-950 px-5 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-400";
 const downloadPdfClassName =
-  "inline-flex h-11 items-center justify-center rounded-md border border-slate-300 px-5 text-sm font-semibold text-slate-800 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400";
+  "invoice-download-button inline-flex h-12 w-12 items-center justify-center rounded-full text-white disabled:cursor-not-allowed disabled:opacity-60";
 
 function filenameForInvoice(invoiceNumber: string): string {
   const safeInvoiceNumber = invoiceNumber.replace(/[^a-zA-Z0-9._-]/g, "-");
@@ -32,28 +28,31 @@ function downloadBlob(blob: Blob, filename: string): void {
   window.setTimeout(() => URL.revokeObjectURL(url), 30_000);
 }
 
-function openBlob(blob: Blob, openedWindow: Window | null): void {
-  const url = URL.createObjectURL(blob);
-
-  if (openedWindow) {
-    openedWindow.location.href = url;
-  } else {
-    window.open(url, "_blank", "noopener,noreferrer");
-  }
-
-  window.setTimeout(() => URL.revokeObjectURL(url), 60_000);
+function DownloadIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      className="h-6 w-6"
+      fill="none"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="2"
+      viewBox="0 0 24 24"
+    >
+      <path d="M12 3v12" />
+      <path d="m7 10 5 5 5-5" />
+      <path d="M5 21h14" />
+    </svg>
+  );
 }
 
 export function InvoicePdfActions({ invoice }: InvoicePdfActionsProps) {
-  const [busyAction, setBusyAction] = useState<PdfAction | null>(null);
+  const [isDownloading, setIsDownloading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const isBusy = busyAction !== null;
 
-  async function handlePdfAction(action: PdfAction): Promise<void> {
-    const openedWindow =
-      action === "open" ? window.open("", "_blank", "noopener,noreferrer") : null;
-
-    setBusyAction(action);
+  async function handleDownloadPdf(): Promise<void> {
+    setIsDownloading(true);
     setErrorMessage(null);
 
     try {
@@ -61,41 +60,31 @@ export function InvoicePdfActions({ invoice }: InvoicePdfActionsProps) {
         "@/components/invoice/InvoicePdfDocument"
       );
       const blob = await renderInvoicePdfBlob(invoice);
-
-      if (action === "open") {
-        openBlob(blob, openedWindow);
-      } else {
-        downloadBlob(blob, filenameForInvoice(invoice.invoiceNumber));
-      }
+      downloadBlob(blob, filenameForInvoice(invoice.invoiceNumber));
     } catch (error) {
       console.error("Client PDF generation failed", error);
-      openedWindow?.close();
       setErrorMessage("Unable to generate the PDF in this browser.");
     } finally {
-      setBusyAction(null);
+      setIsDownloading(false);
     }
   }
 
   return (
-    <div className="flex flex-wrap items-center gap-3">
+    <div className="relative flex items-center">
       <button
-        className={openPdfClassName}
-        disabled={isBusy}
-        onClick={() => void handlePdfAction("open")}
-        type="button"
-      >
-        {busyAction === "open" ? "Opening..." : "Open PDF"}
-      </button>
-      <button
+        aria-label={isDownloading ? "Downloading PDF" : "Download PDF"}
         className={downloadPdfClassName}
-        disabled={isBusy}
-        onClick={() => void handlePdfAction("download")}
+        disabled={isDownloading}
+        onClick={() => void handleDownloadPdf()}
+        title={isDownloading ? "Downloading PDF" : "Download PDF"}
         type="button"
       >
-        {busyAction === "download" ? "Downloading..." : "Download PDF"}
+        <DownloadIcon />
       </button>
       {errorMessage ? (
-        <p className="basis-full text-sm font-medium text-amber-800">{errorMessage}</p>
+        <p className="absolute right-0 top-14 w-64 rounded-md border border-amber-300 bg-amber-50 px-3 py-2 text-sm font-medium text-amber-900 shadow-sm">
+          {errorMessage}
+        </p>
       ) : null}
     </div>
   );

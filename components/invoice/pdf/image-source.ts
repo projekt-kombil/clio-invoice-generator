@@ -3,7 +3,7 @@ export function imageSource(src: string | null): string | null {
     return null;
   }
 
-  if (src.startsWith("http") || src.startsWith("data:")) {
+  if (src.startsWith("http") || src.startsWith("data:") || src.startsWith("/")) {
     return src;
   }
 

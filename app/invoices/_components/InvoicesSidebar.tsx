@@ -32,10 +32,10 @@ function BillListItemLink({
     <Link
       aria-current={isSelected ? "page" : undefined}
       className={[
-        "rounded-md border p-4 text-sm transition",
+        "invoice-bill-card block rounded-md border p-4 text-sm transition",
         isSelected
-          ? "border-slate-950 bg-slate-950 text-white"
-          : "border-slate-300 bg-white text-slate-800 hover:bg-slate-50",
+          ? "border-[var(--jema-navy)] bg-[var(--jema-navy)] text-white"
+          : "border-slate-300 bg-white text-slate-800 hover:border-[var(--jema-cranberry)] hover:bg-slate-50",
       ].join(" ")}
       href={getBillSelectionHref(query, bill.id)}
       key={bill.id}
@@ -81,8 +81,8 @@ export function InvoicesSidebar({
   selectedBillId,
 }: InvoicesSidebarProps) {
   return (
-    <aside className="screen-only border-b border-slate-300 bg-white xl:border-b-0 xl:border-r">
-      <div className="flex flex-col gap-5 p-6">
+    <aside className="invoice-sidebar screen-only border-b border-slate-300 bg-white xl:border-b-0 xl:border-r">
+      <div className="invoice-sidebar-content flex h-full flex-col gap-5 p-5">
         {connectionMessage ? (
           <p className="rounded-md border border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-700">
             {connectionMessage}
@@ -95,13 +95,13 @@ export function InvoicesSidebar({
           </p>
         ) : null}
 
-        <form className="flex flex-col gap-2" action="/invoices">
-          <label className="text-sm font-semibold text-slate-800" htmlFor="q">
+        <form className="invoice-search-form flex flex-col gap-2" action="/invoices">
+          <label className="text-sm font-semibold text-[var(--jema-navy)]" htmlFor="q">
             Search invoices
           </label>
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-2">
             <input
-              className="h-11 min-w-0 flex-1 rounded-md border border-slate-300 px-3 text-sm text-slate-950 outline-none transition focus:border-slate-500"
+              className="invoice-search-control invoice-search-input min-w-0 border px-3 text-sm text-slate-950 outline-none"
               defaultValue={query}
               disabled={!connectionStatus.connected}
               id="q"
@@ -110,7 +110,7 @@ export function InvoicesSidebar({
               type="search"
             />
             <button
-              className="inline-flex h-11 items-center justify-center rounded-md bg-slate-950 px-5 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-300"
+              className="invoice-search-control invoice-search-button inline-flex items-center justify-center px-5 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:bg-slate-300"
               disabled={!connectionStatus.connected}
               type="submit"
             >
@@ -138,11 +138,11 @@ export function InvoicesSidebar({
         ) : null}
 
         {bills.length > 0 ? (
-          <div className="flex flex-col gap-2">
+          <div className="invoice-bills-section flex min-h-0 flex-1 flex-col gap-2">
             <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">
               Bills
             </p>
-            <div className="flex max-h-[calc(100dvh-280px)] flex-col gap-2 overflow-y-auto pr-1">
+            <div className="invoice-bill-list flex min-h-0 w-full flex-1 flex-col gap-2">
               {bills.map((bill) => (
                 <BillListItemLink
                   bill={bill}

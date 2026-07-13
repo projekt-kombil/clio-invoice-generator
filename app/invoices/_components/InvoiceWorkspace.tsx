@@ -16,18 +16,18 @@ export function InvoiceWorkspace({
   selectedInvoiceError,
 }: InvoiceWorkspaceProps) {
   return (
-    <section className="min-w-0 bg-slate-200">
+    <section className="invoice-workspace min-w-0">
       {isConnected && selectedBillId ? (
-        <div className="screen-only flex flex-wrap items-center justify-between gap-3 border-b border-slate-300 bg-slate-100 px-6 py-4">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">
-              Selected invoice
-            </p>
-            <p className="mt-1 text-sm font-semibold text-slate-950">
-              {selectedInvoice?.invoiceNumber ?? selectedBillId}
-            </p>
+        <div className="invoice-workspace-toolbar screen-only">
+          <div className="selected-invoice-badge">
+            <span>Invoice</span>
+            <strong>{selectedInvoice?.invoiceNumber ?? selectedBillId}</strong>
           </div>
-          {selectedInvoice ? <InvoicePdfActions invoice={selectedInvoice} /> : null}
+          {selectedInvoice ? (
+            <div className="invoice-download-float">
+              <InvoicePdfActions invoice={selectedInvoice} />
+            </div>
+          ) : null}
         </div>
       ) : null}
 

@@ -57,11 +57,11 @@ export default async function InvoicesPage({ searchParams }: InvoicesPageProps) 
   }
 
   return (
-    <main className="flex min-h-dvh flex-col bg-slate-100 text-slate-950">
-      <div className="flex min-h-dvh flex-col">
+    <main className="invoice-app-shell flex min-h-dvh flex-col text-slate-950">
+      <div className="flex min-h-dvh flex-col overflow-hidden">
         <InvoicesHeader connectionStatus={connectionStatus} />
 
-        <div className="grid flex-1 grid-cols-1 xl:grid-cols-[380px_minmax(0,1fr)]">
+        <div className="invoice-app-grid grid flex-1 grid-cols-1 xl:grid-cols-[340px_minmax(0,1fr)]">
           <InvoicesSidebar
             bills={bills}
             connectionMessage={connectionMessage}

@@ -14,7 +14,31 @@ function getFormatConfig(source?: InvoiceFormatSource) {
 }
 
 export function formatInvoiceDate(value: string | null): string {
-  return value ?? "";
+  if (!value) {
+    return "";
+  }
+
+  const dateOnlyMatch = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+  const date = dateOnlyMatch
+    ? new Date(
+        Date.UTC(
+          Number(dateOnlyMatch[1]),
+          Number(dateOnlyMatch[2]) - 1,
+          Number(dateOnlyMatch[3]),
+        ),
+      )
+    : new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return value;
+  }
+
+  return new Intl.DateTimeFormat(invoiceFirmConfig.locale, {
+    day: "2-digit",
+    month: "short",
+    timeZone: "UTC",
+    year: "numeric",
+  }).format(date);
 }
 
 export function formatDisplayDate(value: string | null): string {
@@ -44,7 +68,15 @@ export function formatInvoiceMoney(
 }
 
 export function formatInvoicePercent(value: number | null): string {
-  return value === null ? "" : `${value}%`;
+  if (value === null) {
+    return "";
+  }
+
+  const percent = Math.abs(value) < 1 ? value * 100 : value;
+
+  return `${new Intl.NumberFormat(invoiceFirmConfig.locale, {
+    maximumFractionDigits: 2,
+  }).format(percent)}%`;
 }
 
 export function formatInvoiceQuantity(value: number | null): string {

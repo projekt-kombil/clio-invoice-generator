@@ -7,9 +7,12 @@ import type {
 import {
   formatInvoiceDate,
   formatInvoiceMoney,
+  formatInvoicePercent,
   formatInvoiceQuantity,
 } from "@/lib/invoice-formatting";
 import { invoicePdfStyles as styles } from "@/components/invoice/pdf/styles";
+import { getInvoiceLineItemTableGroups } from "@/components/invoice/line-item-table-groups";
+import { sumInvoiceLineItemTax } from "@/components/invoice/tax-summary";
 
 const TABLE_CHUNK_SIZE = 14;
 
@@ -30,66 +33,108 @@ export function shouldShowInvoiceLineGroup(group: InvoiceLineItemGroup): boolean
 export function InvoicePdfTable({
   group,
   invoice,
+  showTax = false,
 }: {
   group: InvoiceLineItemGroup;
   invoice: InvoiceDocumentData;
+  showTax?: boolean;
 }) {
   if (!shouldShowInvoiceLineGroup(group)) {
     return null;
   }
 
-  const chunks = chunkLineItems(group.items);
+  const tableGroups = getInvoiceLineItemTableGroups(group);
 
   return (
-    <View style={styles.tableSection}>
-      <Text style={styles.sectionLabel}>{group.label}</Text>
-      {chunks.map((chunk, chunkIndex) => (
-        <View key={`${group.label}-${chunkIndex}`} style={styles.table}>
-          <View style={styles.tableHeader} wrap={false}>
-            <Text style={[styles.cell, styles.typeCell]}>Type</Text>
-            <Text style={[styles.cell, styles.dateCell]}>Date</Text>
-            <Text style={[styles.cell, styles.descriptionCell]}>Description</Text>
-            <Text style={[styles.cell, styles.attorneyCell]}>Attorney</Text>
-            <Text style={[styles.cell, styles.qtyCell]}>Qty</Text>
-            <Text style={[styles.cell, styles.rateCell]}>Rate</Text>
-            <Text style={[styles.cell, styles.amountCell]}>Amount</Text>
-          </View>
-          {chunk.map((item) => (
-            <View key={item.id} style={styles.tableRow} wrap={false}>
-              <Text style={[styles.cell, styles.typeCell]}>{item.type ?? ""}</Text>
-              <Text style={[styles.cell, styles.dateCell]}>
-                {formatInvoiceDate(item.date)}
-              </Text>
-              <View style={[styles.cell, styles.descriptionCell]}>
-                <Text>{item.description}</Text>
-                {item.note ? <Text style={styles.lineType}>{item.note}</Text> : null}
+    <>
+      {tableGroups.map((tableGroup) => {
+        const chunks = chunkLineItems(tableGroup.items);
+
+        return (
+          <View key={`${group.label}-${tableGroup.label}`} style={styles.tableSection}>
+            <Text style={styles.tableTitle}>{tableGroup.label}</Text>
+            {chunks.map((chunk, chunkIndex) => (
+              <View key={`${tableGroup.label}-${chunkIndex}`} style={styles.table}>
+                <View style={styles.tableHeader} wrap={false}>
+                  <Text style={[styles.cell, styles.dateCell]}>Date</Text>
+                  <Text style={[styles.cell, styles.descriptionCell]}>
+                    Description
+                  </Text>
+                  <Text style={[styles.cell, styles.attorneyCell]}>Attorney</Text>
+                  <Text style={[styles.cell, styles.qtyCell]}>Quantity</Text>
+                  <Text style={[styles.cell, styles.rateCell]}>
+                    {`Rate\u00A0(${invoice.firm.currencyCode})`}
+                  </Text>
+                  <Text style={[styles.cell, styles.amountCell]}>
+                    {`Total\u00A0(${invoice.firm.currencyCode})`}
+                  </Text>
+                </View>
+                {chunk.map((item, itemIndex) => (
+                  <View
+                    key={item.id}
+                    style={
+                      itemIndex % 2 === 1
+                        ? [styles.tableRow, styles.tableRowAlt]
+                        : styles.tableRow
+                    }
+                    wrap={false}
+                  >
+                    <Text style={[styles.cell, styles.dateCell]}>
+                      {formatInvoiceDate(item.date)}
+                    </Text>
+                    <View style={[styles.cell, styles.descriptionCell]}>
+                      <Text style={styles.lineDescription}>{item.description}</Text>
+                      {item.note ? (
+                        <Text style={styles.lineType}>{item.note}</Text>
+                      ) : null}
+                    </View>
+                    <Text style={[styles.cell, styles.attorneyCell]}>
+                      {item.attorney ?? ""}
+                    </Text>
+                    <Text style={[styles.cell, styles.qtyCell]}>
+                      {formatInvoiceQuantity(item.quantity)}
+                    </Text>
+                    <Text style={[styles.cell, styles.rateCell]}>
+                      {formatInvoiceMoney(item.price, invoice)}
+                    </Text>
+                    <Text style={[styles.cell, styles.amountCell]}>
+                      {formatInvoiceMoney(item.total, invoice)}
+                    </Text>
+                  </View>
+                ))}
+                {chunkIndex === chunks.length - 1 ? (
+                  <>
+                    <View style={styles.subtotalRow} wrap={false}>
+                      <Text style={[styles.cell, styles.subtotalLabelCell]}>
+                        Subtotal
+                      </Text>
+                      <Text style={[styles.cell, styles.amountCell]}>
+                        {formatInvoiceMoney(tableGroup.subtotal, invoice)}
+                      </Text>
+                    </View>
+                    {showTax ? (
+                      <View style={styles.taxRow} wrap={false}>
+                        <Text style={[styles.cell, styles.subtotalLabelCell]}>
+                          GST
+                          {invoice.taxRate !== null
+                            ? ` (${formatInvoicePercent(invoice.taxRate)})`
+                            : ""}
+                        </Text>
+                        <Text style={[styles.cell, styles.amountCell]}>
+                          {formatInvoiceMoney(
+                            sumInvoiceLineItemTax(tableGroup.items),
+                            invoice,
+                          )}
+                        </Text>
+                      </View>
+                    ) : null}
+                  </>
+                ) : null}
               </View>
-              <Text style={[styles.cell, styles.attorneyCell]}>
-                {item.attorney ?? ""}
-              </Text>
-              <Text style={[styles.cell, styles.qtyCell]}>
-                {formatInvoiceQuantity(item.quantity)}
-              </Text>
-              <Text style={[styles.cell, styles.rateCell]}>
-                {formatInvoiceMoney(item.price, invoice)}
-              </Text>
-              <Text style={[styles.cell, styles.amountCell]}>
-                {formatInvoiceMoney(item.total, invoice)}
-              </Text>
-            </View>
-          ))}
-          {chunkIndex === chunks.length - 1 ? (
-            <View style={styles.subtotalRow} wrap={false}>
-              <Text style={[styles.cell, styles.subtotalLabelCell]}>
-                {group.label} Subtotal
-              </Text>
-              <Text style={[styles.cell, styles.amountCell]}>
-                {formatInvoiceMoney(group.subtotal, invoice)}
-              </Text>
-            </View>
-          ) : null}
-        </View>
-      ))}
-    </View>
+            ))}
+          </View>
+        );
+      })}
+    </>
   );
 }
