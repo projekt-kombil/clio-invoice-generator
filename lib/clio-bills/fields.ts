@@ -62,3 +62,58 @@ export const CONTACT_DETAIL_FIELDS = [
   "addresses{id,name,street,city,province,postal_code,country}",
   "primary_address{id,name,street,city,province,postal_code,country}",
 ].join(",");
+
+export const PAYMENT_FIELDS = [
+  "id",
+  "date",
+  "amount",
+  "description",
+  "reference",
+  "created_at",
+  "updated_at",
+].join(",");
+
+export const ALLOCATION_FIELDS = [
+  "id",
+  "date",
+  "amount",
+  "description",
+  "interest",
+  "voided_at",
+  "created_at",
+  "updated_at",
+  "bill{id,number}",
+].join(",");
+
+export const CREDIT_MEMO_FIELDS = [
+  "id",
+  "date",
+  "amount",
+  "description",
+  "created_at",
+  "updated_at",
+].join(",");
+
+export const BANK_TRANSACTION_FIELDS = [
+  "id",
+  "date",
+  "amount",
+  "description",
+  "transaction_type",
+  "source",
+  "bill{id,number}",
+  "created_at",
+  "updated_at",
+].join(",");
+
+export const STATEMENT_BILL_FIELDS = [
+  "id",
+  "number",
+  "due_at",
+  "total",
+  "paid",
+  "balance",
+  "state",
+  "client{id,name}",
+  "matters{id,display_number,description}",
+].join(",");

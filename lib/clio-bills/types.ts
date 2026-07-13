@@ -69,6 +69,23 @@ export type BillLineItem = {
   matter: BillMatter | null;
 };
 
+export type BillAccountStatementEntry = {
+  id: string;
+  date: string | null;
+  description: string;
+  amount: number | null;
+  source: "allocation" | "payment" | "credit_memo" | "bank_transaction";
+};
+
+export type BillDetailedStatementInvoice = {
+  id: number;
+  number: string;
+  dueAt: string | null;
+  total: string | number | null;
+  paid: number | null;
+  balance: string | number | null;
+};
+
 export type BillDetail = BillListItem & {
   kind: string | null;
   subject: string | null;
@@ -91,4 +108,6 @@ export type BillDetail = BillListItem & {
   clientAddresses: ClioAddress[];
   matters: BillMatter[];
   lineItems: BillLineItem[];
+  accountStatementEntries: BillAccountStatementEntry[];
+  detailedStatementInvoices: BillDetailedStatementInvoice[];
 };
