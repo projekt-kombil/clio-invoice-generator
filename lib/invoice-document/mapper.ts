@@ -37,8 +37,23 @@ function sumLineItems(items: InvoiceLineItem[]): number | null {
   return items.reduce((sum, item) => sum + (item.total ?? 0), 0);
 }
 
+function getPrimaryMatter(bill: BillDetail) {
+  return bill.matters[0] ?? bill.lineItems[0]?.matter ?? null;
+}
+
+function getResponsibleAttorney(bill: BillDetail) {
+  const primaryMatter = getPrimaryMatter(bill);
+
+  return (
+    primaryMatter?.responsibleAttorney ??
+    primaryMatter?.user ??
+    bill.lineItems[0]?.user ??
+    null
+  );
+}
+
 function getReference(bill: BillDetail): string | null {
-  const primaryMatter = bill.matters[0] ?? bill.lineItems[0]?.matter ?? null;
+  const primaryMatter = getPrimaryMatter(bill);
   const matterReference =
     primaryMatter?.displayNumber ??
     (primaryMatter?.number ? String(primaryMatter.number) : null);
@@ -135,12 +150,8 @@ function getInvoiceAttorneys(bill: BillDetail): InvoiceDocumentData["attorneys"]
 }
 
 export function toInvoiceDocumentData(bill: BillDetail): InvoiceDocumentData {
-  const primaryMatter = bill.matters[0] ?? bill.lineItems[0]?.matter ?? null;
-  const responsibleAttorney =
-    primaryMatter?.responsibleAttorney ??
-    primaryMatter?.user ??
-    bill.lineItems[0]?.user ??
-    null;
+  const primaryMatter = getPrimaryMatter(bill);
+  const responsibleAttorney = getResponsibleAttorney(bill);
   const items = toInvoiceLineItems(bill);
   const expenses = items.filter(isExpenseItem);
   const services = items.filter((item) => !isExpenseItem(item));
@@ -197,5 +208,7 @@ export function toInvoiceDocumentData(bill: BillDetail): InvoiceDocumentData {
       balance: bill.balance,
       interest: bill.interest?.total ?? null,
     },
+    accountStatementEntries: bill.accountStatementEntries,
+    detailedStatementInvoices: bill.detailedStatementInvoices,
   };
 }

@@ -19,6 +19,23 @@ export type InvoiceLineItemGroup = {
   subtotal: number | null;
 };
 
+export type InvoiceAccountStatementEntry = {
+  id: string;
+  date: string | null;
+  description: string;
+  amount: number | null;
+  source: "allocation" | "payment" | "credit_memo" | "bank_transaction";
+};
+
+export type InvoiceDetailedStatementInvoice = {
+  id: number;
+  number: string;
+  dueAt: string | null;
+  total: string | number | null;
+  paid: number | null;
+  balance: string | number | null;
+};
+
 export type InvoiceDocumentData = {
   firm: InvoiceFirmConfig;
   invoiceNumber: string;
@@ -61,4 +78,6 @@ export type InvoiceDocumentData = {
     balance: string | number | null;
     interest: number | null;
   };
+  accountStatementEntries: InvoiceAccountStatementEntry[];
+  detailedStatementInvoices: InvoiceDetailedStatementInvoice[];
 };
