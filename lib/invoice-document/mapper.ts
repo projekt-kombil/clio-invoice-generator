@@ -6,22 +6,59 @@ import type {
 import { invoiceFirmConfig } from "@/lib/invoice-config";
 import type { InvoiceDocumentData, InvoiceLineItem } from "@/lib/invoice-document/types";
 
+const FALLBACK_CLIENT_NAME = "";
+const FALLBACK_DESCRIPTION = "";
+
+function finiteNumber(value: number | null): number | null {
+  return typeof value === "number" && Number.isFinite(value) ? value : null;
+}
+
+function moneyValue(value: string | number | null): string | number | null {
+  if (typeof value === "number") {
+    return Number.isFinite(value) ? value : null;
+  }
+
+  if (typeof value === "string") {
+    const trimmedValue = value.trim();
+
+    return trimmedValue || null;
+  }
+
+  return null;
+}
+
+function displayString(value: string | null, fallback: string): string {
+  return value?.trim() || fallback;
+}
+
+function optionalString(value: string | null): string | null {
+  const trimmedValue = value?.trim();
+
+  return trimmedValue || null;
+}
+
 function toInvoiceLineItems(bill: BillDetail): InvoiceLineItem[] {
-  return bill.lineItems.map((item) => ({
-    id: item.id,
-    date: item.date,
-    type: item.kind,
-    description: item.description ?? item.note ?? "No description",
-    note: item.description ? item.note : null,
+  return bill.lineItems.map((item, index) => ({
+    id: finiteNumber(item.id) ?? index + 1,
+    date: optionalString(item.date),
+    type: optionalString(item.kind),
+    description: displayString(
+      item.description ?? item.note,
+      FALLBACK_DESCRIPTION,
+    ),
+    note: optionalString(item.description ? item.note : null),
     attorney:
-      item.user?.name ??
-      item.matter?.responsibleAttorney?.name ??
-      item.matter?.user?.name ??
+      optionalString(
+        item.user?.name ??
+          item.matter?.responsibleAttorney?.name ??
+          item.matter?.user?.name ??
+          null,
+      ) ??
       null,
-    quantity: item.quantity,
-    price: item.price,
-    tax: item.tax,
-    total: item.total,
+    quantity: finiteNumber(item.quantity),
+    price: finiteNumber(item.price),
+    tax: finiteNumber(item.tax),
+    total: finiteNumber(item.total),
   }));
 }
 
@@ -103,11 +140,26 @@ function formatAddressLines(addresses: ClioAddress[]): string[] {
     address.street,
     localityLine || null,
     address.country,
-  ].filter((line): line is string => Boolean(line));
+  ]
+    .map((line) => optionalString(line))
+    .filter((line): line is string => line !== null);
 }
 
 function hasDiscount(discount: BillDetail["discount"]): boolean {
   return Boolean(discount?.rate && discount.rate > 0);
+}
+
+function toInvoiceDiscount(
+  discount: BillDetail["discount"],
+): InvoiceDocumentData["discount"] {
+  if (!hasDiscount(discount)) {
+    return null;
+  }
+
+  return {
+    rate: finiteNumber(discount?.rate ?? null),
+    type: optionalString(discount?.type ?? null),
+  };
 }
 
 function uniqueUsers(users: Array<ClioUserSummary | null>): ClioUserSummary[] {
@@ -137,9 +189,9 @@ function getInvoiceAttorneys(bill: BillDetail): InvoiceDocumentData["attorneys"]
   ]);
 
   return users.map((user) => ({
-    name: user.name ?? `User ${user.id}`,
+    name: displayString(user.name, `User ${user.id}`),
     initials: user.initials ?? getInitials(user.name),
-    signature: user.signature,
+    signature: optionalString(user.signature),
     role:
       bill.matters.some((matter) => matter.responsibleAttorney?.id === user.id)
         ? "Responsible Attorney"
@@ -165,18 +217,18 @@ export function toInvoiceDocumentData(bill: BillDetail): InvoiceDocumentData {
 
   return {
     firm: invoiceFirmConfig,
-    invoiceNumber: bill.number,
-    issuedAt: bill.issuedAt,
-    dueAt: bill.dueAt,
+    invoiceNumber: displayString(bill.number, `Invoice ${bill.id}`),
+    issuedAt: optionalString(bill.issuedAt),
+    dueAt: optionalString(bill.dueAt),
     reference: getReference(bill),
-    subject: bill.subject ?? primaryMatter?.description ?? null,
+    subject: optionalString(bill.subject ?? primaryMatter?.description ?? null),
     client: {
-      name: bill.clientName ?? "No client",
+      name: displayString(bill.clientName, FALLBACK_CLIENT_NAME),
       addressLines: formatAddressLines(bill.clientAddresses),
     },
     matter: {
-      number: primaryMatter?.displayNumber ?? null,
-      description: primaryMatter?.description ?? null,
+      number: optionalString(primaryMatter?.displayNumber ?? null),
+      description: optionalString(primaryMatter?.description ?? null),
     },
     services: {
       label: "Services",
@@ -190,25 +242,40 @@ export function toInvoiceDocumentData(bill: BillDetail): InvoiceDocumentData {
     },
     attorneys,
     responsibleAttorneySignature:
-      responsibleAttorney?.name ??
-      attorneys[0]?.name ??
-      null,
-    responsibleAttorneySignatureImage: responsibleAttorney?.signature ?? null,
-    taxRate: bill.taxRate,
-    tax: bill.taxSum,
-    discount: hasDiscount(bill.discount) ? bill.discount : null,
+      optionalString(responsibleAttorney?.name ?? attorneys[0]?.name ?? null),
+    responsibleAttorneySignatureImage: optionalString(
+      responsibleAttorney?.signature ?? null,
+    ),
+    taxRate: finiteNumber(bill.taxRate),
+    tax: finiteNumber(bill.taxSum),
+    discount: toInvoiceDiscount(bill.discount),
     subtotal,
-    total: bill.total,
-    paid: bill.paid,
-    balance: bill.balance,
-    status: bill.state,
+    total: moneyValue(bill.total),
+    paid: finiteNumber(bill.paid),
+    balance: moneyValue(bill.balance),
+    status: optionalString(bill.state),
     accountSummary: {
-      total: bill.total,
-      paid: bill.paid,
-      balance: bill.balance,
-      interest: bill.interest?.total ?? null,
+      total: moneyValue(bill.total),
+      paid: finiteNumber(bill.paid),
+      balance: moneyValue(bill.balance),
+      interest: finiteNumber(bill.interest?.total ?? null),
     },
-    accountStatementEntries: bill.accountStatementEntries,
-    detailedStatementInvoices: bill.detailedStatementInvoices,
+    accountStatementEntries: bill.accountStatementEntries.map((entry, index) => ({
+      id: optionalString(entry.id) ?? `account-entry-${index + 1}`,
+      date: optionalString(entry.date),
+      description: displayString(entry.description, "Account entry"),
+      amount: finiteNumber(entry.amount),
+      source: entry.source,
+    })),
+    detailedStatementInvoices: bill.detailedStatementInvoices.map(
+      (statementInvoice, index) => ({
+        id: finiteNumber(statementInvoice.id) ?? index + 1,
+        number: displayString(statementInvoice.number, `Invoice ${index + 1}`),
+        dueAt: optionalString(statementInvoice.dueAt),
+        total: moneyValue(statementInvoice.total),
+        paid: finiteNumber(statementInvoice.paid),
+        balance: moneyValue(statementInvoice.balance),
+      }),
+    ),
   };
 }

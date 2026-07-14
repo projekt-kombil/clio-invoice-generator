@@ -16,7 +16,13 @@ export function getObject(value: unknown): Record<string, unknown> | null {
 }
 
 function getString(value: unknown): string | null {
-  return typeof value === "string" ? value : null;
+  if (typeof value !== "string") {
+    return null;
+  }
+
+  const trimmedValue = value.trim();
+
+  return trimmedValue || null;
 }
 
 function getImageUrl(value: unknown): string | null {
@@ -40,7 +46,7 @@ function getMoneyLike(value: unknown): string | number | null {
 }
 
 function getNumber(value: unknown): number | null {
-  return typeof value === "number" ? value : null;
+  return typeof value === "number" && Number.isFinite(value) ? value : null;
 }
 
 function normalizeUser(value: unknown): ClioUserSummary | null {
