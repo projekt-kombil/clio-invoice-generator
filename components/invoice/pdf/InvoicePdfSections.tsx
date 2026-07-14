@@ -3,7 +3,6 @@ export {
   InvoicePdfSubject,
 } from "@/components/invoice/pdf/InvoicePdfHeaderSummary";
 export {
-  InvoicePdfClosingBlocks,
   InvoicePdfFooter,
   InvoicePdfOverallTotal,
   InvoicePdfPageNumber,

@@ -1,7 +1,5 @@
 export {
-  InvoicePreviewBottom,
   InvoicePreviewFooter,
-  InvoicePreviewAttorneys,
   InvoicePreviewOverallTotal,
   InvoicePreviewSignature,
 } from "@/components/invoice/preview/InvoicePreviewClosing";

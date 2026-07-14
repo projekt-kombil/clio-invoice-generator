@@ -33,12 +33,11 @@ export function formatInvoiceDate(value: string | null | undefined): string {
     return value;
   }
 
-  return new Intl.DateTimeFormat(invoiceFirmConfig.locale, {
-    day: "2-digit",
-    month: "short",
-    timeZone: "UTC",
-    year: "numeric",
-  }).format(date);
+  const day = String(date.getUTCDate()).padStart(2, "0");
+  const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+  const year = date.getUTCFullYear();
+
+  return `${day}/${month}/${year}`;
 }
 
 export function formatDisplayDate(value: string | null): string {

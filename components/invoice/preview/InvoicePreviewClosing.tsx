@@ -1,61 +1,14 @@
 import type { InvoiceDocumentData } from "@/lib/invoice-document";
 import {
-  formatInvoiceDate,
   formatInvoiceMoney,
   formatInvoicePercent,
-  formatInvoiceQuantity,
 } from "@/lib/invoice-formatting";
-import { getInvoiceAccountStatementRows } from "@/components/invoice/account-statement";
-import { getInvoiceAttorneySummary } from "@/components/invoice/attorney-summary";
 import { imageSource } from "@/components/invoice/image-source";
 import { getInvoiceOverallTotalSummary } from "@/components/invoice/overall-total";
 
 type InvoicePreviewSectionProps = {
   invoice: InvoiceDocumentData;
 };
-
-export function InvoicePreviewAttorneys({ invoice }: InvoicePreviewSectionProps) {
-  const attorneySummary = getInvoiceAttorneySummary(invoice);
-
-  return (
-    <section className="invoice-section">
-      <h2 className="invoice-table-title">Attorney Summary</h2>
-      {attorneySummary.length > 0 ? (
-        <table className="invoice-table invoice-attorney-summary-table">
-          <thead>
-            <tr>
-              <th>Attorney</th>
-              <th>Entries</th>
-              <th>Quantity</th>
-              <th>Total ({invoice.firm.currencyCode})</th>
-            </tr>
-          </thead>
-          <tbody>
-            {attorneySummary.map((attorney) => (
-              <tr key={attorney.name}>
-                <td>{attorney.name}</td>
-                <td>{attorney.entries}</td>
-                <td>{formatInvoiceQuantity(attorney.quantity)}</td>
-                <td>{formatInvoiceMoney(attorney.total, invoice)}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      ) : invoice.attorneys.length > 0 ? (
-        <table className="invoice-table invoice-attorney-table">
-          <tbody>
-            {invoice.attorneys.map((attorney) => (
-              <tr key={attorney.name}>
-                <td>{attorney.name}</td>
-                <td>{attorney.role ?? ""}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      ) : null}
-    </section>
-  );
-}
 
 export function InvoicePreviewOverallTotal({
   invoice,
@@ -97,7 +50,7 @@ export function InvoicePreviewSignature({ invoice }: InvoicePreviewSectionProps)
   return (
     <section className="invoice-section invoice-signature-section">
       <h2 className="invoice-signature-heading">
-        Lawyer Responsible E-Signature
+        With Comliments
       </h2>
       <div className="invoice-signature-box">
         {signatureImageSrc ? (
@@ -107,9 +60,7 @@ export function InvoicePreviewSignature({ invoice }: InvoicePreviewSectionProps)
             src={signatureImageSrc}
           />
         ) : null}
-        {invoice.responsibleAttorneySignature ? (
-          <p>{invoice.responsibleAttorneySignature}</p>
-        ) : null}
+        <p>Jema lawyers</p>
       </div>
       <InvoicePreviewPaymentDetails invoice={invoice} />
     </section>
@@ -141,6 +92,10 @@ function InvoicePreviewPaymentDetails({ invoice }: InvoicePreviewSectionProps) {
                 <dd>{account.bsbNumber}</dd>
               </div>
               <div>
+                <dt>SWIFT Code</dt>
+                <dd>{account.swiftCode}</dd>
+              </div>
+              <div>
                 <dt>Account Number</dt>
                 <dd>{account.accountNumber}</dd>
               </div>
@@ -149,57 +104,6 @@ function InvoicePreviewPaymentDetails({ invoice }: InvoicePreviewSectionProps) {
         ))}
       </div>
     </section>
-  );
-}
-
-function InvoicePreviewTotals({ invoice }: InvoicePreviewSectionProps) {
-  const statementRows = getInvoiceAccountStatementRows(invoice);
-
-  return (
-    <section className="invoice-account-statement">
-      <h2 className="invoice-table-title">Detailed Statement of Accounts</h2>
-      <table className="invoice-table invoice-account-statement-table">
-        <thead>
-          <tr>
-            <th>Invoice Number</th>
-            <th>Due On</th>
-            <th>Amount Due ({invoice.firm.currencyCode})</th>
-            <th>Payments Received ({invoice.firm.currencyCode})</th>
-            <th>Balance Due ({invoice.firm.currencyCode})</th>
-          </tr>
-        </thead>
-        <tbody>
-          {statementRows.map((row) =>
-            row.kind === "section" ? (
-              <tr className="statement-section-row" key={row.id}>
-                <td colSpan={5}>{row.label}</td>
-              </tr>
-            ) : row.kind === "outstanding" || row.kind === "total" ? (
-              <tr className={`statement-${row.kind}-row`} key={row.id}>
-                <td colSpan={4}>{row.label}</td>
-                <td>{row.value}</td>
-              </tr>
-            ) : (
-              <tr className="statement-invoice-row" key={row.id}>
-                <td>{row.invoiceNumber}</td>
-                <td>{formatInvoiceDate(row.dueAt ?? null)}</td>
-                <td>{row.amountDue}</td>
-                <td>{row.paymentsReceived}</td>
-                <td>{row.balanceDue}</td>
-              </tr>
-            ),
-          )}
-        </tbody>
-      </table>
-    </section>
-  );
-}
-
-export function InvoicePreviewBottom({ invoice }: InvoicePreviewSectionProps) {
-  return (
-    <div className="invoice-bottom-grid">
-      <InvoicePreviewTotals invoice={invoice} />
-    </div>
   );
 }
 

@@ -40,7 +40,6 @@ export function InvoicePdfHeader({ invoice }: InvoicePdfSectionProps) {
           ))}
         </View>
         <View style={styles.clientAddress}>
-          <Text style={styles.sectionLabel}>Client Address</Text>
           <Text style={styles.primaryText}>{invoice.client.name}</Text>
           {invoice.client.addressLines.map((line) => (
             <Text key={line} style={styles.addressLine}>
@@ -81,11 +80,12 @@ export function InvoicePdfHeader({ invoice }: InvoicePdfSectionProps) {
 
         <Text style={styles.kicker}>Tax Invoice</Text>
         <Text style={styles.invoiceTaxId}>
-          {invoice.firm.taxIdLabel}: {invoice.firm.taxId}
+          {invoice.firm.taxIdLabel}:{" "}
+          <Text style={styles.invoiceTaxIdValue}>{invoice.firm.taxId}</Text>
         </Text>
         <View style={styles.titleMeta}>
           <View style={styles.titleMetaRow}>
-            <Text style={styles.titleMetaLabel}>Invoice #</Text>
+            <Text style={styles.titleMetaLabel}>Invoice No</Text>
             <Text style={styles.titleMetaValue}>{invoice.invoiceNumber}</Text>
           </View>
           <View style={styles.titleMetaRow}>
@@ -93,10 +93,6 @@ export function InvoicePdfHeader({ invoice }: InvoicePdfSectionProps) {
             <Text style={styles.titleMetaValue}>
               {formatInvoiceDate(invoice.issuedAt)}
             </Text>
-          </View>
-          <View style={styles.titleMetaRow}>
-            <Text style={styles.titleMetaLabel}>Due On</Text>
-            <Text style={styles.titleMetaValue}>{formatInvoiceDate(invoice.dueAt)}</Text>
           </View>
           <View style={styles.titleMetaRow}>
             <Text style={styles.titleMetaLabel}>Our Ref</Text>

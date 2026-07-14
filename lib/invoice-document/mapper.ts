@@ -94,6 +94,12 @@ function getReference(bill: BillDetail): string | null {
   const matterReference =
     primaryMatter?.displayNumber ??
     (primaryMatter?.number ? String(primaryMatter.number) : null);
+
+  if (!matterReference) {
+    return null;
+  }
+
+  const referenceNumber = /\d+/.exec(matterReference)?.[0] ?? null;
   const attorneyInitials = getInitials(
     primaryMatter?.responsibleAttorney?.name ??
       primaryMatter?.user?.name ??
@@ -101,11 +107,11 @@ function getReference(bill: BillDetail): string | null {
       null,
   );
 
-  if (!matterReference) {
+  if (!referenceNumber) {
     return null;
   }
 
-  return attorneyInitials ? `${matterReference}/${attorneyInitials}` : matterReference;
+  return attorneyInitials ? `${referenceNumber}/${attorneyInitials}` : referenceNumber;
 }
 
 function getInitials(name: string | null): string | null {

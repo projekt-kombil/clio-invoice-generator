@@ -3,7 +3,6 @@
 import { Document, Font, Page, Text, View, pdf } from "@react-pdf/renderer";
 import type { InvoiceDocumentData } from "@/lib/invoice-document";
 import {
-  InvoicePdfClosingBlocks,
   InvoicePdfFooter,
   InvoicePdfHeader,
   InvoicePdfOverallTotal,
@@ -36,7 +35,6 @@ export function InvoicePdfDocument({ invoice }: InvoicePdfDocumentProps) {
         <InvoicePdfTable group={invoice.services} invoice={invoice} showTax />
         <InvoicePdfTable group={invoice.expenses} invoice={invoice} />
         <InvoicePdfOverallTotal invoice={invoice} />
-        <InvoicePdfClosingBlocks invoice={invoice} />
         <InvoicePdfPaymentBlocks invoice={invoice} />
         <InvoicePdfFooter invoice={invoice} />
         {watermark ? (

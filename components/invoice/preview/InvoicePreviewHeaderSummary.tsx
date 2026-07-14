@@ -36,7 +36,6 @@ export function InvoicePreviewHeader({ invoice }: InvoicePreviewSectionProps) {
           ))}
         </div>
         <div className="invoice-client-address">
-          <h2>Client Address</h2>
           <p className="summary-primary">{invoice.client.name}</p>
           {invoice.client.addressLines.map((line) => (
             <p key={line}>{line}</p>
@@ -57,20 +56,17 @@ export function InvoicePreviewHeader({ invoice }: InvoicePreviewSectionProps) {
 
         <h2 className="invoice-kicker">Tax Invoice</h2>
         <p className="invoice-tax-id">
-          {invoice.firm.taxIdLabel}: {invoice.firm.taxId}
+          {invoice.firm.taxIdLabel}:{" "}
+          <span className="invoice-tax-id-value">{invoice.firm.taxId}</span>
         </p>
         <dl className="invoice-title-meta">
           <div>
-            <dt>Invoice #</dt>
+            <dt>Invoice No</dt>
             <dd>{invoice.invoiceNumber}</dd>
           </div>
           <div>
             <dt>Date</dt>
             <dd>{formatInvoiceDate(invoice.issuedAt)}</dd>
-          </div>
-          <div>
-            <dt>Due On</dt>
-            <dd>{formatInvoiceDate(invoice.dueAt)}</dd>
           </div>
           <div>
             <dt>Our Ref</dt>

@@ -244,11 +244,12 @@ body {
 }
 
 .invoice-page {
-  --invoice-accent: #9f2338;
+  --invoice-accent: #000000;
   --invoice-accent-soft: #f8edf0;
-  --invoice-ink: #082f4f;
-  --invoice-muted: #496276;
-  --invoice-navy: #003b63;
+  --invoice-header-rule: #003b63;
+  --invoice-ink: #000000;
+  --invoice-muted: #000000;
+  --invoice-navy: #000000;
   --invoice-rule: #b8c9d8;
   --invoice-soft: #eef5fa;
   --invoice-soft-strong: #dbeaf4;
@@ -297,7 +298,7 @@ body {
 
 .invoice-kicker {
   color: var(--invoice-navy);
-  font-size: 11px;
+  font-size: 22px;
   font-weight: 700;
   letter-spacing: 0.1em;
   margin: 0 0 4px;
@@ -412,8 +413,12 @@ img.invoice-logo-mark {
 .invoice-tax-id {
   color: var(--invoice-navy) !important;
   font-size: 11px !important;
-  font-weight: 700;
+  font-weight: 400;
   margin: 0 !important;
+}
+
+.invoice-tax-id-value {
+  font-weight: 400;
 }
 
 .invoice-title-meta {
@@ -570,7 +575,7 @@ img.invoice-logo-mark {
 
 .invoice-table th {
   background: var(--invoice-soft-strong);
-  border-bottom: 1px solid var(--invoice-accent);
+  border-bottom: 1px solid var(--invoice-header-rule);
   color: var(--invoice-navy);
   font-size: 10px;
   font-weight: 800;
