@@ -23,7 +23,6 @@
 		"enabled": true
 	},
 	"vars": {
-		"APP_ORIGIN": "https://clio.x07s.com",
 		"CLIO_REDIRECT_URI": "https://clio.x07s.com/api/auth/clio/callback",
 		"CLIO_BASE_URL": "https://app.clio.com/api/v4"
 	},
