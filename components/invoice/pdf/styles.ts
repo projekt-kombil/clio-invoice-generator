@@ -2,10 +2,11 @@ import { StyleSheet } from "@react-pdf/renderer";
 
 import { invoiceTheme } from "@/lib/invoice-theme";
 
-const JEMA_ACCENT = invoiceTheme.accent;
-const JEMA_INK = invoiceTheme.ink;
-const JEMA_MUTED = invoiceTheme.muted;
-const JEMA_NAVY = invoiceTheme.navy;
+const JEMA_ACCENT = "#000000";
+const JEMA_INK = "#000000";
+const JEMA_MUTED = "#000000";
+const JEMA_HEADER_RULE = invoiceTheme.navy;
+const JEMA_NAVY = "#000000";
 const JEMA_RULE = invoiceTheme.rule;
 const JEMA_SOFT = invoiceTheme.soft;
 const JEMA_SOFT_STRONG = invoiceTheme.softStrong;
@@ -129,7 +130,7 @@ export const invoicePdfStyles = StyleSheet.create({
   kicker: {
     marginBottom: 3,
     color: JEMA_NAVY,
-    fontSize: 8,
+    fontSize: 16,
     fontWeight: 700,
     letterSpacing: 0.8,
     textTransform: "uppercase",
@@ -138,7 +139,10 @@ export const invoicePdfStyles = StyleSheet.create({
     marginTop: 0,
     color: JEMA_NAVY,
     fontSize: 8,
-    fontWeight: 700,
+    fontWeight: 400,
+  },
+  invoiceTaxIdValue: {
+    fontWeight: 400,
   },
   titleMeta: {
     marginTop: 7.5,
@@ -260,7 +264,7 @@ export const invoicePdfStyles = StyleSheet.create({
     fontSize: 8,
     fontWeight: 700,
     borderBottomWidth: 1,
-    borderBottomColor: JEMA_ACCENT,
+    borderBottomColor: JEMA_HEADER_RULE,
   },
   tableRow: {
     flexDirection: "row",
@@ -413,7 +417,7 @@ export const invoicePdfStyles = StyleSheet.create({
     fontSize: 8,
     fontWeight: 700,
     borderBottomWidth: 1,
-    borderBottomColor: JEMA_ACCENT,
+    borderBottomColor: JEMA_HEADER_RULE,
   },
   statementLineRow: {
     flexDirection: "row",
@@ -503,7 +507,7 @@ export const invoicePdfStyles = StyleSheet.create({
     fontSize: 8,
     fontWeight: 700,
     borderBottomWidth: 1,
-    borderBottomColor: JEMA_ACCENT,
+    borderBottomColor: JEMA_HEADER_RULE,
   },
   attorneySummaryRow: {
     flexDirection: "row",

@@ -14,6 +14,7 @@ export type InvoiceFirmConfig = {
     bankName: string;
     branch: string;
     bsbNumber: string;
+    swiftCode: string;
   }>;
   footerLines: string[];
 };
@@ -25,7 +26,7 @@ export const invoiceFirmConfig: InvoiceFirmConfig = {
   addressLines: [
     "Peter O'Connor Foundation Building, Kunai St, Waigani, NCD",
     "PO Box 332, Vision City 131, Papua New Guinea",
-    "Port Moresby: +675 325 6400 | +675 325 3281",
+    "Port Moresby: +675 325 6400 | +675 303 0200",
     "Mt Hagen: +675 542 0301 | +675 542 0302",
   ],
   taxIdLabel: "IRC TIN",
@@ -39,13 +40,15 @@ export const invoiceFirmConfig: InvoiceFirmConfig = {
       accountName: "Jema Lawyers",
       branch: "Boroko",
       bsbNumber: "028 - 027",
+      swiftCode: "KINIPGPG",
       accountNumber: "15420655",
     },
     {
-      bankName: "BSP Financial Group",
+      bankName: "BSP Financial Group Limited",
       accountName: "Jema Lawyers",
       branch: "Waigani Drive",
       bsbNumber: "088 - 968",
+      swiftCode: "BOSPPGPM",
       accountNumber: "7017288775",
     },
   ],

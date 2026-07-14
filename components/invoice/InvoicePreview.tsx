@@ -2,8 +2,6 @@ import type { InvoiceDocumentData } from "@/lib/invoice-document";
 import { getInvoiceStatusWatermark } from "@/lib/invoice-document";
 
 import {
-  InvoicePreviewAttorneys,
-  InvoicePreviewBottom,
   InvoicePreviewFooter,
   InvoicePreviewHeader,
   InvoicePreviewItemsTable,
@@ -35,9 +33,7 @@ export function InvoicePreview({ invoice }: InvoicePreviewProps) {
       />
       <InvoicePreviewItemsTable group={invoice.expenses} invoice={invoice} />
       <InvoicePreviewOverallTotal invoice={invoice} />
-      <InvoicePreviewAttorneys invoice={invoice} />
       <InvoicePreviewSignature invoice={invoice} />
-      <InvoicePreviewBottom invoice={invoice} />
       <InvoicePreviewFooter invoice={invoice} />
     </article>
   );
