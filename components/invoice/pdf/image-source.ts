@@ -1,11 +1,1 @@
-export function imageSource(src: string | null): string | null {
-  if (!src) {
-    return null;
-  }
-
-  if (src.startsWith("http") || src.startsWith("data:") || src.startsWith("/")) {
-    return src;
-  }
-
-  return null;
-}
+export { imageSource } from "@/components/invoice/image-source";

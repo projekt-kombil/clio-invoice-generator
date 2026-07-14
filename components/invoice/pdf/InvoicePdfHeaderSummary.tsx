@@ -9,8 +9,14 @@ type InvoicePdfSectionProps = {
   invoice: InvoiceDocumentData;
 };
 
+const TWO_COLUMN_LAWYER_THRESHOLD = 6;
+
 export function InvoicePdfHeader({ invoice }: InvoicePdfSectionProps) {
   const legalTeam = getInvoiceLegalTeam(invoice);
+  const lawyerListStyle =
+    legalTeam.lawyers.length >= TWO_COLUMN_LAWYER_THRESHOLD
+      ? styles.headerLawyerListTwoColumn
+      : styles.headerLawyerList;
 
   return (
     <View style={styles.header}>
@@ -28,7 +34,7 @@ export function InvoicePdfHeader({ invoice }: InvoicePdfSectionProps) {
         )}
         <View style={styles.firmAddress}>
           {invoice.firm.addressLines.map((line) => (
-            <Text key={line} style={styles.mutedText}>
+            <Text key={line} style={styles.addressLine}>
               {line}
             </Text>
           ))}
@@ -37,7 +43,7 @@ export function InvoicePdfHeader({ invoice }: InvoicePdfSectionProps) {
           <Text style={styles.sectionLabel}>Client Address</Text>
           <Text style={styles.primaryText}>{invoice.client.name}</Text>
           {invoice.client.addressLines.map((line) => (
-            <Text key={line} style={styles.mutedText}>
+            <Text key={line} style={styles.addressLine}>
               {line}
             </Text>
           ))}
@@ -47,16 +53,30 @@ export function InvoicePdfHeader({ invoice }: InvoicePdfSectionProps) {
         <View style={styles.headerLegalTeam}>
           <Text style={styles.headerLegalLabel}>Principal</Text>
           <Text style={styles.headerLegalValueText}>{legalTeam.principal}</Text>
-          <Text style={styles.headerLegalLabel}>Lawyers</Text>
-          {legalTeam.lawyers.length > 0 ? (
-            legalTeam.lawyers.map((lawyer) => (
-              <Text key={lawyer} style={styles.headerLegalValueText}>
-                {lawyer}
-              </Text>
-            ))
-          ) : (
-            <Text style={styles.headerLegalValueText}>Pending</Text>
-          )}
+          <Text
+            style={[styles.headerLegalLabel, styles.headerLegalLabelAfterValue]}
+          >
+            Lawyers
+          </Text>
+          <View style={lawyerListStyle}>
+            {legalTeam.lawyers.length > 0 ? (
+              legalTeam.lawyers.map((lawyer) => (
+                <Text
+                  key={lawyer}
+                  style={
+                    legalTeam.lawyers.length >= TWO_COLUMN_LAWYER_THRESHOLD
+                      ? [
+                          styles.headerLegalValueText,
+                          styles.headerLawyerListTwoColumnText,
+                        ]
+                      : styles.headerLegalValueText
+                  }
+                >
+                  {lawyer}
+                </Text>
+              ))
+            ) : null}
+          </View>
         </View>
 
         <Text style={styles.kicker}>Tax Invoice</Text>
@@ -93,7 +113,7 @@ export function InvoicePdfSubject({ invoice }: InvoicePdfSectionProps) {
     <Text style={styles.reLine}>
       <Text style={styles.reLineLabel}>Re: </Text>
       <Text style={styles.reLineSubject}>
-        {invoice.subject ?? invoice.matter.description ?? "Subject details pending"}
+        {invoice.subject ?? invoice.matter.description ?? ""}
       </Text>
     </Text>
   );

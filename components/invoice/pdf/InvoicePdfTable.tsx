@@ -11,7 +11,10 @@ import {
   formatInvoiceQuantity,
 } from "@/lib/invoice-formatting";
 import { invoicePdfStyles as styles } from "@/components/invoice/pdf/styles";
-import { getInvoiceLineItemTableGroups } from "@/components/invoice/line-item-table-groups";
+import {
+  getInvoiceLineItemNetTotal,
+  getInvoiceLineItemTableGroups,
+} from "@/components/invoice/line-item-table-groups";
 import { sumInvoiceLineItemTax } from "@/components/invoice/tax-summary";
 
 const TABLE_CHUNK_SIZE = 14;
@@ -43,7 +46,9 @@ export function InvoicePdfTable({
     return null;
   }
 
-  const tableGroups = getInvoiceLineItemTableGroups(group);
+  const tableGroups = getInvoiceLineItemTableGroups(group, {
+    excludeTax: showTax,
+  });
 
   return (
     <>
@@ -61,11 +66,13 @@ export function InvoicePdfTable({
                     Description
                   </Text>
                   <Text style={[styles.cell, styles.attorneyCell]}>Attorney</Text>
-                  <Text style={[styles.cell, styles.qtyCell]}>Quantity</Text>
-                  <Text style={[styles.cell, styles.rateCell]}>
+                  <Text style={[styles.cell, styles.numericCell, styles.qtyCell]}>
+                    Quantity
+                  </Text>
+                  <Text style={[styles.cell, styles.numericCell, styles.rateCell]}>
                     {`Rate\u00A0(${invoice.firm.currencyCode})`}
                   </Text>
-                  <Text style={[styles.cell, styles.amountCell]}>
+                  <Text style={[styles.cell, styles.numericCell, styles.amountCell]}>
                     {`Total\u00A0(${invoice.firm.currencyCode})`}
                   </Text>
                 </View>
@@ -91,41 +98,48 @@ export function InvoicePdfTable({
                     <Text style={[styles.cell, styles.attorneyCell]}>
                       {item.attorney ?? ""}
                     </Text>
-                    <Text style={[styles.cell, styles.qtyCell]}>
+                    <Text style={[styles.cell, styles.numericCell, styles.qtyCell]}>
                       {formatInvoiceQuantity(item.quantity)}
                     </Text>
-                    <Text style={[styles.cell, styles.rateCell]}>
+                    <Text style={[styles.cell, styles.numericCell, styles.rateCell]}>
                       {formatInvoiceMoney(item.price, invoice)}
                     </Text>
-                    <Text style={[styles.cell, styles.amountCell]}>
-                      {formatInvoiceMoney(item.total, invoice)}
+                    <Text style={[styles.cell, styles.numericCell, styles.amountCell]}>
+                      {formatInvoiceMoney(
+                        showTax ? getInvoiceLineItemNetTotal(item) : item.total,
+                        invoice,
+                      )}
                     </Text>
                   </View>
                 ))}
                 {chunkIndex === chunks.length - 1 ? (
                   <>
                     <View style={styles.subtotalRow} wrap={false}>
-                      <Text style={[styles.cell, styles.subtotalLabelCell]}>
-                        Subtotal
-                      </Text>
-                      <Text style={[styles.cell, styles.amountCell]}>
-                        {formatInvoiceMoney(tableGroup.subtotal, invoice)}
-                      </Text>
+                      <View style={styles.lineItemSummaryPair}>
+                        <Text style={[styles.cell, styles.lineItemSummaryLabel]}>
+                          Subtotal
+                        </Text>
+                        <Text style={[styles.cell, styles.lineItemSummaryAmount]}>
+                          {formatInvoiceMoney(tableGroup.subtotal, invoice)}
+                        </Text>
+                      </View>
                     </View>
                     {showTax ? (
                       <View style={styles.taxRow} wrap={false}>
-                        <Text style={[styles.cell, styles.subtotalLabelCell]}>
-                          GST
-                          {invoice.taxRate !== null
-                            ? ` (${formatInvoicePercent(invoice.taxRate)})`
-                            : ""}
-                        </Text>
-                        <Text style={[styles.cell, styles.amountCell]}>
-                          {formatInvoiceMoney(
-                            sumInvoiceLineItemTax(tableGroup.items),
-                            invoice,
-                          )}
-                        </Text>
+                        <View style={styles.lineItemSummaryPair}>
+                          <Text style={[styles.cell, styles.lineItemSummaryLabel]}>
+                            GST
+                            {invoice.taxRate !== null
+                              ? ` (${formatInvoicePercent(invoice.taxRate)})`
+                              : ""}
+                          </Text>
+                          <Text style={[styles.cell, styles.lineItemSummaryAmount]}>
+                            {formatInvoiceMoney(
+                              sumInvoiceLineItemTax(tableGroup.items),
+                              invoice,
+                            )}
+                          </Text>
+                        </View>
                       </View>
                     ) : null}
                   </>

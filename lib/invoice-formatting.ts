@@ -13,9 +13,9 @@ function getFormatConfig(source?: InvoiceFormatSource) {
   return "firm" in source ? source.firm : source;
 }
 
-export function formatInvoiceDate(value: string | null): string {
+export function formatInvoiceDate(value: string | null | undefined): string {
   if (!value) {
-    return "";
+    return "Not shown";
   }
 
   const dateOnlyMatch = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
@@ -46,11 +46,15 @@ export function formatDisplayDate(value: string | null): string {
 }
 
 export function formatInvoiceMoney(
-  value: string | number | null,
+  value: string | number | null | undefined,
   source?: InvoiceFormatSource,
 ): string {
-  if (value === null) {
-    return "";
+  if (value === null || value === undefined) {
+    return "Not shown";
+  }
+
+  if (typeof value === "number" && !Number.isFinite(value)) {
+    return "Not shown";
   }
 
   const amount = typeof value === "number" ? value : Number(value);
@@ -67,9 +71,9 @@ export function formatInvoiceMoney(
   }).format(amount);
 }
 
-export function formatInvoicePercent(value: number | null): string {
-  if (value === null) {
-    return "";
+export function formatInvoicePercent(value: number | null | undefined): string {
+  if (value === null || value === undefined || !Number.isFinite(value)) {
+    return "Not shown";
   }
 
   const percent = Math.abs(value) < 1 ? value * 100 : value;
@@ -79,9 +83,13 @@ export function formatInvoicePercent(value: number | null): string {
   }).format(percent)}%`;
 }
 
-export function formatInvoiceQuantity(value: number | null): string {
-  if (value === null) {
-    return "";
+export function formatInvoiceQuantity(value: number | null | undefined): string {
+  if (value === null || value === undefined) {
+    return "Not shown";
+  }
+
+  if (!Number.isFinite(value)) {
+    return "Not shown";
   }
 
   return Number.isInteger(value) ? String(value) : value.toFixed(2);
@@ -92,7 +100,7 @@ export function formatInvoiceDiscount(
   source?: InvoiceFormatSource,
 ): string {
   if (!discount) {
-    return "";
+    return "Not shown";
   }
 
   const rate = discount.rate ?? 0;

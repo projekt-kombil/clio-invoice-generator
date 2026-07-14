@@ -47,7 +47,7 @@ function BillListItemLink({
         </span>
       </span>
       <span className="mt-2 block font-medium">
-        {bill.clientName ?? "No client"}
+        {bill.clientName ?? ""}
       </span>
       <span
         className={[

@@ -47,7 +47,7 @@ export function getInvoiceAttorneySummary(
 }
 
 export function getInvoiceLegalTeam(invoice: InvoiceDocumentData): InvoiceLegalTeam {
-  const principal = invoice.firm.principalName;
+  const principal = invoice.firm.principalName.trim();
   const lawyerNames = getInvoiceAttorneySummary(invoice)
     .map((attorney) => attorney.name)
     .filter((name) => name !== "Unassigned");
@@ -60,7 +60,7 @@ export function getInvoiceLegalTeam(invoice: InvoiceDocumentData): InvoiceLegalT
 
     if (
       !normalizedName ||
-      normalizedName.toLowerCase() === principal.trim().toLowerCase()
+      normalizedName.toLowerCase() === principal.toLowerCase()
     ) {
       continue;
     }

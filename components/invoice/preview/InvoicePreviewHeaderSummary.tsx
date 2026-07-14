@@ -1,23 +1,31 @@
 import type { InvoiceDocumentData } from "@/lib/invoice-document";
 import { formatInvoiceDate } from "@/lib/invoice-formatting";
+import { imageSource } from "@/components/invoice/image-source";
 import { getInvoiceLegalTeam } from "@/components/invoice/attorney-summary";
 
 type InvoicePreviewSectionProps = {
   invoice: InvoiceDocumentData;
 };
 
+const TWO_COLUMN_LAWYER_THRESHOLD = 6;
+
 export function InvoicePreviewHeader({ invoice }: InvoicePreviewSectionProps) {
   const legalTeam = getInvoiceLegalTeam(invoice);
+  const logoSrc = imageSource(invoice.firm.logoSrc);
+  const lawyerListClassName =
+    legalTeam.lawyers.length >= TWO_COLUMN_LAWYER_THRESHOLD
+      ? "invoice-header-lawyer-list invoice-header-lawyer-list-two-column"
+      : "invoice-header-lawyer-list";
 
   return (
     <header className="invoice-header">
       <div className="invoice-brand">
-        {invoice.firm.logoSrc ? (
+        {logoSrc ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             alt={`${invoice.firm.name} logo`}
             className="invoice-logo-mark"
-            src={invoice.firm.logoSrc}
+            src={logoSrc}
           />
         ) : (
           <div className="invoice-logo-mark">{invoice.firm.logoInitials}</div>
@@ -37,19 +45,17 @@ export function InvoicePreviewHeader({ invoice }: InvoicePreviewSectionProps) {
       </div>
       <div className="invoice-title-block">
         <div className="invoice-header-legal-team">
-          <p className="invoice-header-legal-label">Principal</p>
+          <h2 className="invoice-header-legal-label">Principal</h2>
           <p>{legalTeam.principal}</p>
-          <p className="invoice-header-legal-label">Lawyers</p>
-          <div className="invoice-header-lawyer-list">
+          <h2 className="invoice-header-legal-label">Lawyers</h2>
+          <div className={lawyerListClassName}>
             {legalTeam.lawyers.length > 0 ? (
               legalTeam.lawyers.map((lawyer) => <p key={lawyer}>{lawyer}</p>)
-            ) : (
-              <p>Pending</p>
-            )}
+            ) : null}
           </div>
         </div>
 
-        <p className="invoice-kicker">Tax Invoice</p>
+        <h2 className="invoice-kicker">Tax Invoice</h2>
         <p className="invoice-tax-id">
           {invoice.firm.taxIdLabel}: {invoice.firm.taxId}
         </p>
@@ -81,7 +87,7 @@ export function InvoicePreviewSubject({ invoice }: InvoicePreviewSectionProps) {
     <p className="invoice-re-line">
       <strong>Re:</strong>{" "}
       <span className="invoice-re-subject">
-        {invoice.subject ?? invoice.matter.description ?? "Subject details pending"}
+        {invoice.subject ?? invoice.matter.description ?? ""}
       </span>
     </p>
   );

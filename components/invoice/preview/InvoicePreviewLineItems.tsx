@@ -8,7 +8,10 @@ import {
   formatInvoicePercent,
   formatInvoiceQuantity,
 } from "@/lib/invoice-formatting";
-import { getInvoiceLineItemTableGroups } from "@/components/invoice/line-item-table-groups";
+import {
+  getInvoiceLineItemNetTotal,
+  getInvoiceLineItemTableGroups,
+} from "@/components/invoice/line-item-table-groups";
 import { sumInvoiceLineItemTax } from "@/components/invoice/tax-summary";
 
 export function InvoicePreviewItemsTable({
@@ -24,7 +27,9 @@ export function InvoicePreviewItemsTable({
     return null;
   }
 
-  const tableGroups = getInvoiceLineItemTableGroups(group);
+  const tableGroups = getInvoiceLineItemTableGroups(group, {
+    excludeTax: showTax,
+  });
 
   return tableGroups.map((tableGroup) => (
     <section className="invoice-section" key={`${group.label}-${tableGroup.label}`}>
@@ -51,22 +56,40 @@ export function InvoicePreviewItemsTable({
               <td>{item.attorney ?? ""}</td>
               <td>{formatInvoiceQuantity(item.quantity)}</td>
               <td>{formatInvoiceMoney(item.price, invoice)}</td>
-              <td>{formatInvoiceMoney(item.total, invoice)}</td>
+              <td>
+                {formatInvoiceMoney(
+                  showTax ? getInvoiceLineItemNetTotal(item) : item.total,
+                  invoice,
+                )}
+              </td>
             </tr>
           ))}
           <tr className="invoice-subtotal-row">
-            <td colSpan={5}>Subtotal</td>
-            <td>{formatInvoiceMoney(tableGroup.subtotal, invoice)}</td>
+            <td colSpan={6}>
+              <div className="invoice-line-summary-pair">
+                <span>Subtotal</span>
+                <span>{formatInvoiceMoney(tableGroup.subtotal, invoice)}</span>
+              </div>
+            </td>
           </tr>
           {showTax ? (
             <tr className="invoice-tax-row">
-              <td colSpan={5}>
-                GST
-                {invoice.taxRate !== null
-                  ? ` (${formatInvoicePercent(invoice.taxRate)})`
-                  : ""}
+              <td colSpan={6}>
+                <div className="invoice-line-summary-pair">
+                  <span>
+                    GST
+                    {invoice.taxRate !== null
+                      ? ` (${formatInvoicePercent(invoice.taxRate)})`
+                      : ""}
+                  </span>
+                  <span>
+                    {formatInvoiceMoney(
+                      sumInvoiceLineItemTax(tableGroup.items),
+                      invoice,
+                    )}
+                  </span>
+                </div>
               </td>
-              <td>{formatInvoiceMoney(sumInvoiceLineItemTax(tableGroup.items), invoice)}</td>
             </tr>
           ) : null}
         </tbody>

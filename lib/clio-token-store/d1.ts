@@ -34,14 +34,24 @@ function isD1Database(value: unknown): value is D1Database {
   );
 }
 
-export async function getCloudflareD1(): Promise<D1Database | null> {
+function getD1SetupMessage(detail?: string): string {
+  const suffix = detail ? `\n\nOriginal error: ${detail}` : "";
+
+  return (
+    `Missing Cloudflare D1 binding: ${D1_BINDING}.\n\n` +
+    "This app is Cloudflare Workers + D1 only. Run it through OpenNext/Cloudflare local dev or preview so Wrangler provides the D1 binding, and apply migrations with Wrangler before testing auth flows." +
+    suffix
+  );
+}
+
+export async function getCloudflareD1(): Promise<D1Database> {
   try {
     const { getCloudflareContext } = await import("@opennextjs/cloudflare");
     const { env } = await getCloudflareContext({ async: true });
     const binding = (env as unknown as Record<string, unknown>)[D1_BINDING];
 
     if (!binding) {
-      throw new Error(`Missing Cloudflare D1 binding: ${D1_BINDING}.`);
+      throw new Error(getD1SetupMessage());
     }
 
     if (!isD1Database(binding)) {
@@ -57,7 +67,7 @@ export async function getCloudflareD1(): Promise<D1Database | null> {
       message.includes("Cannot find package 'wrangler'") ||
       message.includes("Cannot find module 'wrangler'")
     ) {
-      return null;
+      throw new Error(getD1SetupMessage(message));
     }
 
     throw error;

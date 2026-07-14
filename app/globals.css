@@ -264,17 +264,19 @@ body {
 }
 
 .invoice-watermark {
+  align-items: center;
   color: rgb(159 35 56 / 0.14);
+  display: flex;
   font-size: 30mm;
   font-weight: 800;
-  left: 50%;
+  inset: 0;
+  justify-content: center;
   letter-spacing: 0;
   line-height: 1;
   pointer-events: none;
   position: absolute;
   text-transform: uppercase;
-  top: 43%;
-  transform: translate(-50%, -50%) rotate(-34deg);
+  transform: rotate(-34deg);
   user-select: none;
   white-space: nowrap;
   z-index: 2;
@@ -294,11 +296,11 @@ body {
 }
 
 .invoice-kicker {
-  color: var(--invoice-accent);
-  font-size: 14px;
+  color: var(--invoice-navy);
+  font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.08em;
-  margin: 0 0 6px;
+  letter-spacing: 0.1em;
+  margin: 0 0 4px;
   text-transform: uppercase;
 }
 
@@ -315,7 +317,6 @@ body {
   align-items: flex-start;
   display: flex;
   flex-direction: column;
-  gap: 5mm;
   width: 124mm;
 }
 
@@ -342,15 +343,15 @@ img.invoice-logo-mark {
 }
 
 .invoice-firm-address {
-  margin-top: 1mm;
+  margin-top: 2.5mm;
 }
 
 .invoice-client-address {
-  margin-top: 7mm;
+  margin-top: 12mm;
 }
 
 .invoice-client-address h2 {
-  margin-bottom: 3mm !important;
+  margin-bottom: 4px !important;
 }
 
 .invoice-brand p,
@@ -370,7 +371,7 @@ img.invoice-logo-mark {
 
 .invoice-header-legal-team {
   display: grid;
-  gap: 2px;
+  gap: 0;
   margin-bottom: 8mm;
   margin-top: 12mm;
   min-width: 44mm;
@@ -385,8 +386,12 @@ img.invoice-logo-mark {
 }
 
 .invoice-header-legal-label {
+  color: var(--invoice-navy) !important;
+  font-size: 11px !important;
   font-weight: 700;
-  margin-top: 4px !important;
+  letter-spacing: 0.1em;
+  margin: 8px 0 4px !important;
+  text-transform: uppercase;
 }
 
 .invoice-header-legal-label:first-child {
@@ -398,11 +403,17 @@ img.invoice-logo-mark {
   gap: 2px;
 }
 
+.invoice-header-lawyer-list-two-column {
+  column-gap: 5mm;
+  grid-template-columns: max-content max-content;
+  justify-content: end;
+}
+
 .invoice-tax-id {
   color: var(--invoice-navy) !important;
   font-size: 11px !important;
   font-weight: 700;
-  margin: 2px 0 0 !important;
+  margin: 0 !important;
 }
 
 .invoice-title-meta {
@@ -507,6 +518,19 @@ img.invoice-logo-mark {
   padding-top: 6mm;
 }
 
+.invoice-signature-section {
+  padding-top: 12mm;
+}
+
+.invoice-signature-heading {
+  color: var(--invoice-navy);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  margin: 0 0 4px;
+  text-transform: uppercase;
+}
+
 .invoice-re-line {
   color: var(--invoice-ink);
   font-size: 11px;
@@ -560,6 +584,24 @@ img.invoice-logo-mark {
   vertical-align: top;
 }
 
+.invoice-line-items tbody tr,
+.invoice-attorney-summary-table tbody tr,
+.invoice-overall-total-table tr,
+.invoice-account-statement-table tbody tr {
+  height: 31px;
+}
+
+.invoice-line-items th:nth-child(3),
+.invoice-line-items th:nth-child(4),
+.invoice-line-items th:nth-child(5),
+.invoice-line-items th:nth-child(6),
+.invoice-line-items td:nth-child(3),
+.invoice-line-items td:nth-child(4),
+.invoice-line-items td:nth-child(5),
+.invoice-line-items td:nth-child(6) {
+  white-space: nowrap;
+}
+
 .invoice-line-items th:nth-child(4),
 .invoice-line-items th:nth-child(5),
 .invoice-line-items th:nth-child(6),
@@ -567,7 +609,6 @@ img.invoice-logo-mark {
 .invoice-line-items td:nth-child(5),
 .invoice-line-items td:nth-child(6) {
   text-align: right;
-  white-space: nowrap;
 }
 
 .invoice-line-items th:nth-child(1),
@@ -577,12 +618,12 @@ img.invoice-logo-mark {
 
 .invoice-line-items th:nth-child(2),
 .invoice-line-items td:nth-child(2) {
-  width: 48%;
+  width: 44%;
 }
 
 .invoice-line-items th:nth-child(3),
 .invoice-line-items td:nth-child(3) {
-  width: 13%;
+  width: 17%;
 }
 
 .invoice-line-items th:nth-child(4),
@@ -606,24 +647,38 @@ img.invoice-logo-mark {
 
 .invoice-subtotal-row td {
   background: white;
-  border-top: 1px solid var(--invoice-rule);
+  border-bottom: 0;
   font-weight: 800;
 }
 
 .invoice-subtotal-row td:first-child {
   color: var(--invoice-muted);
-  text-align: right;
 }
 
 .invoice-tax-row td {
   background: white;
-  border-bottom: 1px solid var(--invoice-rule);
+  border-bottom: 0;
   font-weight: 800;
 }
 
 .invoice-tax-row td:first-child {
   color: var(--invoice-muted);
+}
+
+.invoice-line-summary-pair {
+  align-items: center;
+  border-bottom: 1px solid var(--invoice-rule);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  margin-left: auto;
+  min-height: 31px;
+  width: 42%;
+}
+
+.invoice-line-summary-pair span:last-child {
+  color: var(--invoice-ink);
   text-align: right;
+  white-space: nowrap;
 }
 
 .line-description,
@@ -664,9 +719,12 @@ img.invoice-logo-mark {
 }
 
 .payment-bank-grid {
+  background: var(--invoice-soft);
+  border: 1px solid var(--invoice-rule);
   display: grid;
   gap: 10mm;
   grid-template-columns: 1fr 1fr;
+  padding: 5mm 6mm;
   width: 100%;
 }
 
@@ -750,7 +808,6 @@ img.invoice-logo-mark {
 }
 
 .invoice-signature-box {
-  border-bottom: 1px solid var(--invoice-rule);
   min-height: 18mm;
   padding-bottom: 4mm;
   width: 78mm;
@@ -791,6 +848,8 @@ img.invoice-logo-mark {
   color: var(--invoice-navy);
   font-size: 10px;
   font-weight: 800;
+  text-align: center;
+  vertical-align: middle;
 }
 
 .statement-outstanding-row td {

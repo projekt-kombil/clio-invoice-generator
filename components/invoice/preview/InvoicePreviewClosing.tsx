@@ -7,7 +7,8 @@ import {
 } from "@/lib/invoice-formatting";
 import { getInvoiceAccountStatementRows } from "@/components/invoice/account-statement";
 import { getInvoiceAttorneySummary } from "@/components/invoice/attorney-summary";
-import { sumInvoiceLineItemTax } from "@/components/invoice/tax-summary";
+import { imageSource } from "@/components/invoice/image-source";
+import { getInvoiceOverallTotalSummary } from "@/components/invoice/overall-total";
 
 type InvoicePreviewSectionProps = {
   invoice: InvoiceDocumentData;
@@ -51,9 +52,7 @@ export function InvoicePreviewAttorneys({ invoice }: InvoicePreviewSectionProps)
             ))}
           </tbody>
         </table>
-      ) : (
-        <p>Attorney details pending Clio field verification.</p>
-      )}
+      ) : null}
     </section>
   );
 }
@@ -61,7 +60,7 @@ export function InvoicePreviewAttorneys({ invoice }: InvoicePreviewSectionProps)
 export function InvoicePreviewOverallTotal({
   invoice,
 }: InvoicePreviewSectionProps) {
-  const servicesTax = sumInvoiceLineItemTax(invoice.services.items);
+  const totalSummary = getInvoiceOverallTotalSummary(invoice);
 
   return (
     <section className="invoice-section invoice-overall-total">
@@ -70,7 +69,7 @@ export function InvoicePreviewOverallTotal({
         <tbody>
           <tr>
             <td>Subtotal ({invoice.firm.currencyCode})</td>
-            <td>{formatInvoiceMoney(invoice.subtotal, invoice)}</td>
+            <td>{formatInvoiceMoney(totalSummary.subtotal, invoice)}</td>
           </tr>
           <tr>
             <td>
@@ -80,11 +79,11 @@ export function InvoicePreviewOverallTotal({
                 : ""}{" "}
               ({invoice.firm.currencyCode})
             </td>
-            <td>{formatInvoiceMoney(servicesTax, invoice)}</td>
+            <td>{formatInvoiceMoney(totalSummary.tax, invoice)}</td>
           </tr>
           <tr>
             <td>Total ({invoice.firm.currencyCode})</td>
-            <td>{formatInvoiceMoney(invoice.total, invoice)}</td>
+            <td>{formatInvoiceMoney(totalSummary.total, invoice)}</td>
           </tr>
         </tbody>
       </table>
@@ -93,18 +92,24 @@ export function InvoicePreviewOverallTotal({
 }
 
 export function InvoicePreviewSignature({ invoice }: InvoicePreviewSectionProps) {
+  const signatureImageSrc = imageSource(invoice.responsibleAttorneySignatureImage);
+
   return (
-    <section className="invoice-section">
-      <h2>Lawyer Responsible E-Signature</h2>
+    <section className="invoice-section invoice-signature-section">
+      <h2 className="invoice-signature-heading">
+        Lawyer Responsible E-Signature
+      </h2>
       <div className="invoice-signature-box">
-        {invoice.responsibleAttorneySignatureImage ? (
+        {signatureImageSrc ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             alt="Responsible attorney signature"
-            src={invoice.responsibleAttorneySignatureImage}
+            src={signatureImageSrc}
           />
         ) : null}
-        <p>{invoice.responsibleAttorneySignature ?? "Signature pending."}</p>
+        {invoice.responsibleAttorneySignature ? (
+          <p>{invoice.responsibleAttorneySignature}</p>
+        ) : null}
       </div>
       <InvoicePreviewPaymentDetails invoice={invoice} />
     </section>

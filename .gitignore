@@ -43,21 +43,6 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 
-# local app data
-/data/
-*.db
-*.db-journal
-*.db-shm
-*.db-wal
-*.sqlite
-*.sqlite3
-*.sqlite-journal
-*.sqlite-shm
-*.sqlite-wal
-
-# vercel
-.vercel
-
 # typescript
 *.tsbuildinfo
 next-env.d.ts

@@ -37,11 +37,17 @@ type ClioListResponse = {
 };
 
 function getString(value: unknown): string | null {
-  return typeof value === "string" ? value : null;
+  if (typeof value !== "string") {
+    return null;
+  }
+
+  const trimmedValue = value.trim();
+
+  return trimmedValue || null;
 }
 
 function getNumber(value: unknown): number | null {
-  return typeof value === "number" ? value : null;
+  return typeof value === "number" && Number.isFinite(value) ? value : null;
 }
 
 function normalizeDetailedStatementInvoice(
@@ -206,10 +212,15 @@ async function getImageDataUrl(url: string): Promise<string> {
   const response = await fetch(url, { cache: "no-store" });
 
   if (!response.ok) {
-    return url;
+    return "";
   }
 
   const contentType = response.headers.get("content-type") ?? "image/png";
+
+  if (!contentType.toLowerCase().startsWith("image/")) {
+    return "";
+  }
+
   const buffer = Buffer.from(await response.arrayBuffer());
 
   return `data:${contentType};base64,${buffer.toString("base64")}`;
@@ -226,7 +237,7 @@ async function hydrateUserSignature(
   let signature = cache.get(user.signature);
 
   if (!signature) {
-    signature = getImageDataUrl(user.signature).catch(() => user.signature ?? "");
+    signature = getImageDataUrl(user.signature).catch(() => "");
     cache.set(user.signature, signature);
   }
 
