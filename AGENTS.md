@@ -1,18 +1,8 @@
-<!-- BEGIN:nextjs-agent-rules -->
-# This is NOT the Next.js you know
+# Invoice Preview/PDF Parity
 
-This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices.
-<!-- END:nextjs-agent-rules -->
-
-# Project Guardrails
-
-- Read `codex_clio_invoice_generator_instruction_sheet.md` before making product or architecture changes.
-- Keep the app local, single-user, and minimal unless the project brief changes.
-- Use the Clio Manage API as the source of truth for all financial values.
-- Keep Clio OAuth operations server-side.
-- Do not expose Clio secrets to browser code or prefix them with `NEXT_PUBLIC_`.
-- Do not store OAuth tokens in browser storage.
-- Encrypt OAuth tokens before storing them in SQLite.
-- Use read-only Clio permissions unless the project scope explicitly changes.
-- Do not create, update, or delete Clio records.
-- Verify current Clio API endpoints and fields against official Clio docs before implementing API requests.
+- The on-screen invoice preview and the downloaded PDF must visually match as closely as possible.
+- Any style, spacing, layout, typography, color, table, header, footer, total, or section change made for the preview should be reflected in the generated PDF.
+- Any PDF-specific style change should be checked against the preview so the user sees the same invoice before downloading.
+- Do not treat the preview as a rough approximation. It is the visual source of truth for what the downloaded invoice should look like.
+- When changing invoice presentation, inspect both the preview components and the PDF components/styles.
+- Regenerate/download the PDF after style changes to verify that the downloaded file matches the preview.
