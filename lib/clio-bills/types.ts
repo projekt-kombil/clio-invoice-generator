@@ -1,5 +1,10 @@
 export type ClioBillListResponse = {
   data?: unknown[];
+  meta?: {
+    paging?: {
+      next?: string;
+    };
+  };
 };
 
 export type ClioBillDetailResponse = {
