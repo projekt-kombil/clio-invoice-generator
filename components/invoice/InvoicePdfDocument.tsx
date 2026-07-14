@@ -1,6 +1,6 @@
 "use client";
 
-import { Document, Font, Page, Text, pdf } from "@react-pdf/renderer";
+import { Document, Font, Page, Text, View, pdf } from "@react-pdf/renderer";
 import type { InvoiceDocumentData } from "@/lib/invoice-document";
 import {
   InvoicePdfClosingBlocks,
@@ -40,9 +40,9 @@ export function InvoicePdfDocument({ invoice }: InvoicePdfDocumentProps) {
         <InvoicePdfPaymentBlocks invoice={invoice} />
         <InvoicePdfFooter invoice={invoice} />
         {watermark ? (
-          <Text fixed style={styles.watermark}>
-            {watermark}
-          </Text>
+          <View fixed style={styles.watermarkContainer}>
+            <Text style={styles.watermark}>{watermark}</Text>
+          </View>
         ) : null}
         <InvoicePdfPageNumber />
       </Page>

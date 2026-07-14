@@ -7,7 +7,7 @@ import {
 } from "@/lib/invoice-formatting";
 import { getInvoiceAccountStatementRows } from "@/components/invoice/account-statement";
 import { getInvoiceAttorneySummary } from "@/components/invoice/attorney-summary";
-import { sumInvoiceLineItemTax } from "@/components/invoice/tax-summary";
+import { getInvoiceOverallTotalSummary } from "@/components/invoice/overall-total";
 
 type InvoicePreviewSectionProps = {
   invoice: InvoiceDocumentData;
@@ -61,7 +61,7 @@ export function InvoicePreviewAttorneys({ invoice }: InvoicePreviewSectionProps)
 export function InvoicePreviewOverallTotal({
   invoice,
 }: InvoicePreviewSectionProps) {
-  const servicesTax = sumInvoiceLineItemTax(invoice.services.items);
+  const totalSummary = getInvoiceOverallTotalSummary(invoice);
 
   return (
     <section className="invoice-section invoice-overall-total">
@@ -70,7 +70,7 @@ export function InvoicePreviewOverallTotal({
         <tbody>
           <tr>
             <td>Subtotal ({invoice.firm.currencyCode})</td>
-            <td>{formatInvoiceMoney(invoice.subtotal, invoice)}</td>
+            <td>{formatInvoiceMoney(totalSummary.subtotal, invoice)}</td>
           </tr>
           <tr>
             <td>
@@ -80,11 +80,11 @@ export function InvoicePreviewOverallTotal({
                 : ""}{" "}
               ({invoice.firm.currencyCode})
             </td>
-            <td>{formatInvoiceMoney(servicesTax, invoice)}</td>
+            <td>{formatInvoiceMoney(totalSummary.tax, invoice)}</td>
           </tr>
           <tr>
             <td>Total ({invoice.firm.currencyCode})</td>
-            <td>{formatInvoiceMoney(invoice.total, invoice)}</td>
+            <td>{formatInvoiceMoney(totalSummary.total, invoice)}</td>
           </tr>
         </tbody>
       </table>
@@ -94,8 +94,10 @@ export function InvoicePreviewOverallTotal({
 
 export function InvoicePreviewSignature({ invoice }: InvoicePreviewSectionProps) {
   return (
-    <section className="invoice-section">
-      <h2>Lawyer Responsible E-Signature</h2>
+    <section className="invoice-section invoice-signature-section">
+      <h2 className="invoice-signature-heading">
+        Lawyer Responsible E-Signature
+      </h2>
       <div className="invoice-signature-box">
         {invoice.responsibleAttorneySignatureImage ? (
           // eslint-disable-next-line @next/next/no-img-element

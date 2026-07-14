@@ -12,6 +12,16 @@ export type InvoiceLegalTeam = {
   lawyers: string[];
 };
 
+const dummyLawyerNames = [
+  "Alexandra Chen",
+  "Benjamin Hart",
+  "Claudia Rivera",
+  "Daniel Mercer",
+  "Elena Walsh",
+  "Frederick Singh",
+  "Georgia Taylor",
+];
+
 function addNullableNumber(current: number | null, next: number | null): number | null {
   if (next === null) {
     return current;
@@ -66,6 +76,10 @@ export function getInvoiceLegalTeam(invoice: InvoiceDocumentData): InvoiceLegalT
     }
 
     uniqueLawyers.set(normalizedName.toLowerCase(), normalizedName);
+  }
+
+  for (const name of dummyLawyerNames) {
+    uniqueLawyers.set(name.toLowerCase(), name);
   }
 
   return {

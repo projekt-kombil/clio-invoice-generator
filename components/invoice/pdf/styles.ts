@@ -9,6 +9,7 @@ const JEMA_NAVY = invoiceTheme.navy;
 const JEMA_RULE = invoiceTheme.rule;
 const JEMA_SOFT = invoiceTheme.soft;
 const JEMA_SOFT_STRONG = invoiceTheme.softStrong;
+const TABLE_ROW_MIN_HEIGHT = 23;
 
 export const invoicePdfStyles = StyleSheet.create({
   page: {
@@ -21,16 +22,22 @@ export const invoicePdfStyles = StyleSheet.create({
     color: JEMA_INK,
     backgroundColor: "#ffffff",
   },
-  watermark: {
+  watermarkContainer: {
     position: "absolute",
-    top: "42%",
-    left: 76,
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
+    alignItems: "center",
+    justifyContent: "center",
+    transform: "rotate(-34deg)",
+  },
+  watermark: {
     color: JEMA_ACCENT,
     opacity: 0.14,
     fontSize: 92,
     fontWeight: 700,
     textTransform: "uppercase",
-    transform: "rotate(-34deg)",
   },
   header: {
     flexDirection: "row",
@@ -56,7 +63,7 @@ export const invoicePdfStyles = StyleSheet.create({
   logoImage: {
     width: 351.5,
     maxHeight: 68,
-    marginBottom: 14.2,
+    marginBottom: 7.1,
     objectFit: "contain",
   },
   firmName: {
@@ -67,6 +74,11 @@ export const invoicePdfStyles = StyleSheet.create({
   mutedText: {
     color: JEMA_MUTED,
     lineHeight: 1.45,
+  },
+  addressLine: {
+    color: JEMA_MUTED,
+    fontSize: 8,
+    lineHeight: 1.35,
   },
   firmAddress: {
     marginTop: 0,
@@ -84,11 +96,17 @@ export const invoicePdfStyles = StyleSheet.create({
     width: 124.7,
   },
   headerLegalLabel: {
-    color: JEMA_INK,
+    color: JEMA_NAVY,
     fontSize: 8,
     fontWeight: 700,
-    marginTop: 3,
+    letterSpacing: 0.8,
+    marginBottom: 3,
+    marginTop: 0,
     textAlign: "right",
+    textTransform: "uppercase",
+  },
+  headerLegalLabelAfterValue: {
+    marginTop: 6,
   },
   headerLegalValueText: {
     color: JEMA_INK,
@@ -96,15 +114,28 @@ export const invoicePdfStyles = StyleSheet.create({
     lineHeight: 1.35,
     textAlign: "right",
   },
+  headerLawyerList: {
+    flexDirection: "column",
+  },
+  headerLawyerListTwoColumn: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "flex-end",
+    columnGap: 14.2,
+  },
+  headerLawyerListTwoColumnText: {
+    width: 55.2,
+  },
   kicker: {
-    marginBottom: 2,
-    color: JEMA_ACCENT,
-    fontSize: 10,
+    marginBottom: 3,
+    color: JEMA_NAVY,
+    fontSize: 8,
     fontWeight: 700,
+    letterSpacing: 0.8,
     textTransform: "uppercase",
   },
   invoiceTaxId: {
-    marginTop: 1,
+    marginTop: 0,
     color: JEMA_NAVY,
     fontSize: 8,
     fontWeight: 700,
@@ -144,10 +175,11 @@ export const invoicePdfStyles = StyleSheet.create({
     backgroundColor: JEMA_SOFT,
   },
   sectionLabel: {
-    marginBottom: 8,
+    marginBottom: 3,
     color: JEMA_NAVY,
     fontSize: 8,
     fontWeight: 700,
+    letterSpacing: 0.8,
     textTransform: "uppercase",
   },
   primaryText: {
@@ -189,6 +221,19 @@ export const invoicePdfStyles = StyleSheet.create({
     paddingHorizontal: 0,
     paddingVertical: 0,
   },
+  signatureSection: {
+    marginTop: 34,
+    paddingHorizontal: 0,
+    paddingVertical: 0,
+  },
+  signatureHeading: {
+    marginBottom: 3,
+    color: JEMA_NAVY,
+    fontSize: 8,
+    fontWeight: 700,
+    letterSpacing: 0.8,
+    textTransform: "uppercase",
+  },
   matterTitle: {
     color: JEMA_INK,
     fontWeight: 400,
@@ -219,6 +264,7 @@ export const invoicePdfStyles = StyleSheet.create({
   },
   tableRow: {
     flexDirection: "row",
+    minHeight: TABLE_ROW_MIN_HEIGHT,
     borderBottomWidth: 0.5,
     borderBottomColor: JEMA_RULE,
   },
@@ -230,43 +276,52 @@ export const invoicePdfStyles = StyleSheet.create({
     paddingVertical: 5.2,
   },
   dateCell: {
-    width: "12%",
+    width: "14%",
   },
   descriptionCell: {
-    width: "40%",
+    width: "44%",
   },
   attorneyCell: {
-    width: "14%",
+    width: "17%",
   },
   qtyCell: {
     width: "8%",
     textAlign: "right",
   },
   rateCell: {
-    width: "12%",
+    width: "8%",
     textAlign: "right",
   },
   amountCell: {
-    width: "14%",
+    width: "9%",
     textAlign: "right",
   },
   subtotalRow: {
     flexDirection: "row",
-    borderTopWidth: 0.5,
-    borderTopColor: JEMA_RULE,
+    minHeight: TABLE_ROW_MIN_HEIGHT,
     borderBottomWidth: 0,
     backgroundColor: "#ffffff",
     fontWeight: 700,
   },
   taxRow: {
     flexDirection: "row",
-    borderBottomWidth: 0.5,
-    borderBottomColor: JEMA_RULE,
+    minHeight: TABLE_ROW_MIN_HEIGHT,
     backgroundColor: "#ffffff",
     fontWeight: 700,
   },
-  subtotalLabelCell: {
-    width: "86%",
+  lineItemSummaryPair: {
+    flexDirection: "row",
+    width: "42%",
+    minHeight: TABLE_ROW_MIN_HEIGHT,
+    marginLeft: "auto",
+    borderBottomWidth: 0.5,
+    borderBottomColor: JEMA_RULE,
+  },
+  lineItemSummaryLabel: {
+    width: "50%",
+  },
+  lineItemSummaryAmount: {
+    width: "50%",
     textAlign: "right",
   },
   lineDescription: {
@@ -288,6 +343,7 @@ export const invoicePdfStyles = StyleSheet.create({
   overallTotalLineRow: {
     flexDirection: "row",
     justifyContent: "space-between",
+    minHeight: TABLE_ROW_MIN_HEIGHT,
     paddingHorizontal: 8,
     paddingVertical: 6,
     borderBottomWidth: 1,
@@ -299,6 +355,7 @@ export const invoicePdfStyles = StyleSheet.create({
   overallTotalRow: {
     flexDirection: "row",
     justifyContent: "space-between",
+    minHeight: TABLE_ROW_MIN_HEIGHT,
     paddingHorizontal: 8,
     paddingVertical: 7,
     backgroundColor: JEMA_NAVY,
@@ -317,6 +374,11 @@ export const invoicePdfStyles = StyleSheet.create({
   paymentBankGrid: {
     flexDirection: "row",
     justifyContent: "space-between",
+    paddingHorizontal: 17,
+    paddingVertical: 14.2,
+    backgroundColor: JEMA_SOFT,
+    borderWidth: 0.5,
+    borderColor: JEMA_RULE,
   },
   paymentBankColumn: {
     width: "47%",
@@ -352,6 +414,7 @@ export const invoicePdfStyles = StyleSheet.create({
   },
   statementLineRow: {
     flexDirection: "row",
+    minHeight: TABLE_ROW_MIN_HEIGHT,
     borderBottomWidth: 0.5,
     borderBottomColor: JEMA_RULE,
   },
@@ -370,15 +433,20 @@ export const invoicePdfStyles = StyleSheet.create({
     textAlign: "right",
   },
   statementSectionRow: {
+    alignItems: "center",
+    justifyContent: "center",
+    minHeight: TABLE_ROW_MIN_HEIGHT,
     paddingHorizontal: 8,
     paddingVertical: 6,
     backgroundColor: JEMA_SOFT_STRONG,
     color: JEMA_NAVY,
     fontSize: 8,
     fontWeight: 700,
+    textAlign: "center",
   },
   statementSubtotalRow: {
     flexDirection: "row",
+    minHeight: TABLE_ROW_MIN_HEIGHT,
     backgroundColor: "#ffffff",
     borderBottomWidth: 0.5,
     borderBottomColor: JEMA_RULE,
@@ -386,6 +454,7 @@ export const invoicePdfStyles = StyleSheet.create({
   },
   statementBalanceRow: {
     flexDirection: "row",
+    minHeight: TABLE_ROW_MIN_HEIGHT,
     backgroundColor: JEMA_NAVY,
     color: "#ffffff",
     fontSize: 11,
@@ -416,8 +485,6 @@ export const invoicePdfStyles = StyleSheet.create({
     width: 220,
     minHeight: 48,
     paddingBottom: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: JEMA_RULE,
   },
   signatureText: {
     color: JEMA_INK,
@@ -437,6 +504,7 @@ export const invoicePdfStyles = StyleSheet.create({
   },
   attorneySummaryRow: {
     flexDirection: "row",
+    minHeight: TABLE_ROW_MIN_HEIGHT,
     borderBottomWidth: 0.5,
     borderBottomColor: JEMA_RULE,
   },

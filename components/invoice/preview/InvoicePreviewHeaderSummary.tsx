@@ -6,8 +6,14 @@ type InvoicePreviewSectionProps = {
   invoice: InvoiceDocumentData;
 };
 
+const TWO_COLUMN_LAWYER_THRESHOLD = 6;
+
 export function InvoicePreviewHeader({ invoice }: InvoicePreviewSectionProps) {
   const legalTeam = getInvoiceLegalTeam(invoice);
+  const lawyerListClassName =
+    legalTeam.lawyers.length >= TWO_COLUMN_LAWYER_THRESHOLD
+      ? "invoice-header-lawyer-list invoice-header-lawyer-list-two-column"
+      : "invoice-header-lawyer-list";
 
   return (
     <header className="invoice-header">
@@ -37,10 +43,10 @@ export function InvoicePreviewHeader({ invoice }: InvoicePreviewSectionProps) {
       </div>
       <div className="invoice-title-block">
         <div className="invoice-header-legal-team">
-          <p className="invoice-header-legal-label">Principal</p>
+          <h2 className="invoice-header-legal-label">Principal</h2>
           <p>{legalTeam.principal}</p>
-          <p className="invoice-header-legal-label">Lawyers</p>
-          <div className="invoice-header-lawyer-list">
+          <h2 className="invoice-header-legal-label">Lawyers</h2>
+          <div className={lawyerListClassName}>
             {legalTeam.lawyers.length > 0 ? (
               legalTeam.lawyers.map((lawyer) => <p key={lawyer}>{lawyer}</p>)
             ) : (
@@ -49,7 +55,7 @@ export function InvoicePreviewHeader({ invoice }: InvoicePreviewSectionProps) {
           </div>
         </div>
 
-        <p className="invoice-kicker">Tax Invoice</p>
+        <h2 className="invoice-kicker">Tax Invoice</h2>
         <p className="invoice-tax-id">
           {invoice.firm.taxIdLabel}: {invoice.firm.taxId}
         </p>

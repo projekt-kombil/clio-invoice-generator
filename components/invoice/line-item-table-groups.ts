@@ -23,8 +23,24 @@ function sumLineItems(items: InvoiceLineItem[]): number | null {
   return items.reduce((sum, item) => sum + (item.total ?? 0), 0);
 }
 
+function sumLineItemNetTotals(items: InvoiceLineItem[]): number | null {
+  if (items.length === 0) {
+    return null;
+  }
+
+  return items.reduce(
+    (sum, item) => sum + getInvoiceLineItemNetTotal(item),
+    0,
+  );
+}
+
+export function getInvoiceLineItemNetTotal(item: InvoiceLineItem): number {
+  return (item.total ?? 0) - (item.tax ?? 0);
+}
+
 export function getInvoiceLineItemTableGroups(
   group: InvoiceLineItemGroup,
+  options: { excludeTax?: boolean } = {},
 ): InvoiceLineItemTableGroup[] {
   const groups = new Map<string, InvoiceLineItem[]>();
 
@@ -38,6 +54,6 @@ export function getInvoiceLineItemTableGroups(
   return [...groups.entries()].map(([label, items]) => ({
     label,
     items,
-    subtotal: sumLineItems(items),
+    subtotal: options.excludeTax ? sumLineItemNetTotals(items) : sumLineItems(items),
   }));
 }

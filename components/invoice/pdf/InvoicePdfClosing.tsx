@@ -10,7 +10,7 @@ import { getInvoiceAccountStatementRows } from "@/components/invoice/account-sta
 import { getInvoiceAttorneySummary } from "@/components/invoice/attorney-summary";
 import { imageSource } from "@/components/invoice/pdf/image-source";
 import { invoicePdfStyles as styles } from "@/components/invoice/pdf/styles";
-import { sumInvoiceLineItemTax } from "@/components/invoice/tax-summary";
+import { getInvoiceOverallTotalSummary } from "@/components/invoice/overall-total";
 
 type InvoicePdfSectionProps = {
   invoice: InvoiceDocumentData;
@@ -154,14 +154,14 @@ export function InvoicePdfClosingBlocks({ invoice }: InvoicePdfSectionProps) {
 }
 
 export function InvoicePdfOverallTotal({ invoice }: InvoicePdfSectionProps) {
-  const servicesTax = sumInvoiceLineItemTax(invoice.services.items);
+  const totalSummary = getInvoiceOverallTotalSummary(invoice);
 
   return (
     <View style={styles.overallTotalSection} wrap={false}>
       <Text style={styles.tableTitle}>Invoice Total</Text>
       <View style={styles.overallTotalLineRow}>
         <Text>Subtotal ({invoice.firm.currencyCode})</Text>
-        <Text>{formatInvoiceMoney(invoice.subtotal, invoice)}</Text>
+        <Text>{formatInvoiceMoney(totalSummary.subtotal, invoice)}</Text>
       </View>
       <View style={styles.overallTotalLineRow}>
         <Text>
@@ -171,11 +171,11 @@ export function InvoicePdfOverallTotal({ invoice }: InvoicePdfSectionProps) {
             : ""}{" "}
           ({invoice.firm.currencyCode})
         </Text>
-        <Text>{formatInvoiceMoney(servicesTax, invoice)}</Text>
+        <Text>{formatInvoiceMoney(totalSummary.tax, invoice)}</Text>
       </View>
       <View style={styles.overallTotalRow}>
         <Text>Total ({invoice.firm.currencyCode})</Text>
-        <Text>{formatInvoiceMoney(invoice.total, invoice)}</Text>
+        <Text>{formatInvoiceMoney(totalSummary.total, invoice)}</Text>
       </View>
     </View>
   );
@@ -184,8 +184,10 @@ export function InvoicePdfOverallTotal({ invoice }: InvoicePdfSectionProps) {
 export function InvoicePdfPaymentBlocks({ invoice }: InvoicePdfSectionProps) {
   return (
     <>
-      <View style={styles.matterStrip} wrap={false}>
-        <Text style={styles.sectionLabel}>Lawyer Responsible E-Signature</Text>
+      <View style={styles.signatureSection} wrap={false}>
+        <Text style={styles.signatureHeading}>
+          Lawyer Responsible E-Signature
+        </Text>
         <View style={styles.signatureBox}>
           {imageSource(invoice.responsibleAttorneySignatureImage) ? (
             // eslint-disable-next-line jsx-a11y/alt-text

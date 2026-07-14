@@ -79,7 +79,7 @@ export function getInvoiceAccountStatementRows(
   if (otherInvoices.length > 0) {
     rows.push({
       id: "section-other-invoices",
-      label: `Other Invoices: ${invoice.firm.currencyCode}`,
+      label: "Other Invoices",
       kind: "section",
     });
     rows.push(...otherInvoices.map((row) => toInvoiceRow(row, invoice)));
@@ -93,7 +93,7 @@ export function getInvoiceAccountStatementRows(
 
   rows.push({
     id: "section-current-invoice",
-    label: `Current Invoice: ${invoice.firm.currencyCode}`,
+    label: "Current Invoice",
     kind: "section",
   });
   rows.push(...currentInvoices.map((row) => toInvoiceRow(row, invoice)));
