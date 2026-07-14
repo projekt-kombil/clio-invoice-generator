@@ -75,9 +75,7 @@ export function InvoicePdfHeader({ invoice }: InvoicePdfSectionProps) {
                   {lawyer}
                 </Text>
               ))
-            ) : (
-              <Text style={styles.headerLegalValueText}>Pending</Text>
-            )}
+            ) : null}
           </View>
         </View>
 
@@ -115,7 +113,7 @@ export function InvoicePdfSubject({ invoice }: InvoicePdfSectionProps) {
     <Text style={styles.reLine}>
       <Text style={styles.reLineLabel}>Re: </Text>
       <Text style={styles.reLineSubject}>
-        {invoice.subject ?? invoice.matter.description ?? "Subject details pending"}
+        {invoice.subject ?? invoice.matter.description ?? ""}
       </Text>
     </Text>
   );

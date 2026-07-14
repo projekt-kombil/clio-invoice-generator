@@ -7,6 +7,7 @@ import {
 } from "@/lib/invoice-formatting";
 import { getInvoiceAccountStatementRows } from "@/components/invoice/account-statement";
 import { getInvoiceAttorneySummary } from "@/components/invoice/attorney-summary";
+import { imageSource } from "@/components/invoice/image-source";
 import { getInvoiceOverallTotalSummary } from "@/components/invoice/overall-total";
 
 type InvoicePreviewSectionProps = {
@@ -51,9 +52,7 @@ export function InvoicePreviewAttorneys({ invoice }: InvoicePreviewSectionProps)
             ))}
           </tbody>
         </table>
-      ) : (
-        <p>Attorney details pending Clio field verification.</p>
-      )}
+      ) : null}
     </section>
   );
 }
@@ -93,20 +92,24 @@ export function InvoicePreviewOverallTotal({
 }
 
 export function InvoicePreviewSignature({ invoice }: InvoicePreviewSectionProps) {
+  const signatureImageSrc = imageSource(invoice.responsibleAttorneySignatureImage);
+
   return (
     <section className="invoice-section invoice-signature-section">
       <h2 className="invoice-signature-heading">
         Lawyer Responsible E-Signature
       </h2>
       <div className="invoice-signature-box">
-        {invoice.responsibleAttorneySignatureImage ? (
+        {signatureImageSrc ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             alt="Responsible attorney signature"
-            src={invoice.responsibleAttorneySignatureImage}
+            src={signatureImageSrc}
           />
         ) : null}
-        <p>{invoice.responsibleAttorneySignature ?? "Signature pending."}</p>
+        {invoice.responsibleAttorneySignature ? (
+          <p>{invoice.responsibleAttorneySignature}</p>
+        ) : null}
       </div>
       <InvoicePreviewPaymentDetails invoice={invoice} />
     </section>

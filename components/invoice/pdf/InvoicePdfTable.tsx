@@ -66,11 +66,13 @@ export function InvoicePdfTable({
                     Description
                   </Text>
                   <Text style={[styles.cell, styles.attorneyCell]}>Attorney</Text>
-                  <Text style={[styles.cell, styles.qtyCell]}>Quantity</Text>
-                  <Text style={[styles.cell, styles.rateCell]}>
+                  <Text style={[styles.cell, styles.numericCell, styles.qtyCell]}>
+                    Quantity
+                  </Text>
+                  <Text style={[styles.cell, styles.numericCell, styles.rateCell]}>
                     {`Rate\u00A0(${invoice.firm.currencyCode})`}
                   </Text>
-                  <Text style={[styles.cell, styles.amountCell]}>
+                  <Text style={[styles.cell, styles.numericCell, styles.amountCell]}>
                     {`Total\u00A0(${invoice.firm.currencyCode})`}
                   </Text>
                 </View>
@@ -96,13 +98,13 @@ export function InvoicePdfTable({
                     <Text style={[styles.cell, styles.attorneyCell]}>
                       {item.attorney ?? ""}
                     </Text>
-                    <Text style={[styles.cell, styles.qtyCell]}>
+                    <Text style={[styles.cell, styles.numericCell, styles.qtyCell]}>
                       {formatInvoiceQuantity(item.quantity)}
                     </Text>
-                    <Text style={[styles.cell, styles.rateCell]}>
+                    <Text style={[styles.cell, styles.numericCell, styles.rateCell]}>
                       {formatInvoiceMoney(item.price, invoice)}
                     </Text>
-                    <Text style={[styles.cell, styles.amountCell]}>
+                    <Text style={[styles.cell, styles.numericCell, styles.amountCell]}>
                       {formatInvoiceMoney(
                         showTax ? getInvoiceLineItemNetTotal(item) : item.total,
                         invoice,

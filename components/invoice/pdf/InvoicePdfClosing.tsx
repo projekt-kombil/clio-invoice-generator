@@ -143,11 +143,7 @@ export function InvoicePdfClosingBlocks({ invoice }: InvoicePdfSectionProps) {
               {attorney.role ? ` - ${attorney.role}` : ""}
             </Text>
           ))
-        ) : (
-          <Text style={styles.mutedText}>
-            Attorney details pending Clio field verification.
-          </Text>
-        )}
+        ) : null}
       </View>
     </>
   );
@@ -196,9 +192,11 @@ export function InvoicePdfPaymentBlocks({ invoice }: InvoicePdfSectionProps) {
               style={styles.signatureImage}
             />
           ) : null}
-          <Text style={styles.signatureText}>
-            {invoice.responsibleAttorneySignature ?? "Signature pending."}
-          </Text>
+          {invoice.responsibleAttorneySignature ? (
+            <Text style={styles.signatureText}>
+              {invoice.responsibleAttorneySignature}
+            </Text>
+          ) : null}
         </View>
       </View>
 

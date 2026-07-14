@@ -275,25 +275,28 @@ export const invoicePdfStyles = StyleSheet.create({
     paddingHorizontal: 3.8,
     paddingVertical: 5.2,
   },
+  numericCell: {
+    paddingHorizontal: 5,
+  },
   dateCell: {
     width: "14%",
   },
   descriptionCell: {
-    width: "44%",
+    width: "39%",
   },
   attorneyCell: {
     width: "17%",
   },
   qtyCell: {
-    width: "8%",
+    width: "9%",
     textAlign: "right",
   },
   rateCell: {
-    width: "8%",
+    width: "10%",
     textAlign: "right",
   },
   amountCell: {
-    width: "9%",
+    width: "11%",
     textAlign: "right",
   },
   subtotalRow: {
