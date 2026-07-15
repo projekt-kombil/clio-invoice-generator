@@ -11,5 +11,5 @@ export default async function InvoicePreviewRedirectPage({
 }: InvoicePreviewRedirectPageProps) {
   const { id } = await params;
 
-  redirect(`/invoices/${id}`);
+  redirect(`/?bill=${encodeURIComponent(id)}`);
 }

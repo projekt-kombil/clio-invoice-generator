@@ -8,11 +8,13 @@ import {
 } from "@/lib/clio-bills/fields";
 import {
   getObject,
+  normalizeBill,
   normalizeAddress,
   normalizeBillDetail,
   normalizeLineItem,
   normalizeMatter,
 } from "@/lib/clio-bills/normalizers";
+import { isSelectableBill } from "@/lib/clio-bills/state";
 import type {
   BillAccountStatementEntry,
   BillDetail,
@@ -333,6 +335,13 @@ export async function getBillDetail(id: string): Promise<BillDetail | null> {
     throw new Error(`Clio bill detail request failed with status ${billResponse.status}.`);
   }
 
+  const billPayload = (await billResponse.json()) as ClioBillDetailResponse;
+  const billSummary = normalizeBill(billPayload.data);
+
+  if (!billSummary || !isSelectableBill(billSummary)) {
+    return null;
+  }
+
   const lineItemParams = new URLSearchParams({
     bill_id: id,
     limit: "100",
@@ -346,7 +355,6 @@ export async function getBillDetail(id: string): Promise<BillDetail | null> {
     );
   }
 
-  const billPayload = (await billResponse.json()) as ClioBillDetailResponse;
   const lineItemPayload = (await lineItemResponse.json()) as ClioBillListResponse;
   const lineItems: BillLineItem[] = Array.isArray(lineItemPayload.data)
     ? lineItemPayload.data

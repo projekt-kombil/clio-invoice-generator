@@ -1,10 +1,13 @@
 import { clioApiFetch } from "@/lib/clio";
 import { BILL_LIST_FIELDS } from "@/lib/clio-bills/fields";
 import { normalizeBill } from "@/lib/clio-bills/normalizers";
+import { isSelectableBill } from "@/lib/clio-bills/state";
 import type {
   BillListItem,
   ClioBillListResponse,
 } from "@/lib/clio-bills/types";
+
+const BILL_SEARCH_PAGE_LIMIT = "100";
 
 function matchesQuery(bill: BillListItem, query: string): boolean {
   const normalizedQuery = query.trim().toLowerCase();
@@ -18,21 +21,39 @@ function matchesQuery(bill: BillListItem, query: string): boolean {
     .some((value) => value?.toLowerCase().includes(normalizedQuery));
 }
 
-export async function searchBills(query: string): Promise<BillListItem[]> {
-  const params = new URLSearchParams({
-    limit: "50",
-    fields: BILL_LIST_FIELDS,
-  });
-  const response = await clioApiFetch(`/bills?${params.toString()}`);
+async function getPagedBills(path: string): Promise<BillListItem[]> {
+  const bills: BillListItem[] = [];
+  let nextPath: string | null = path;
 
-  if (!response.ok) {
-    throw new Error(`Clio bill list request failed with status ${response.status}.`);
+  while (nextPath) {
+    const response = await clioApiFetch(nextPath);
+
+    if (!response.ok) {
+      throw new Error(`Clio bill list request failed with status ${response.status}.`);
+    }
+
+    const payload = (await response.json()) as ClioBillListResponse;
+
+    if (Array.isArray(payload.data)) {
+      bills.push(
+        ...payload.data
+          .map(normalizeBill)
+          .filter((bill) => bill !== null),
+      );
+    }
+
+    nextPath = payload.meta?.paging?.next ?? null;
   }
 
-  const payload = (await response.json()) as ClioBillListResponse;
-  const bills = Array.isArray(payload.data)
-    ? payload.data.map(normalizeBill).filter((bill) => bill !== null)
-    : [];
+  return bills;
+}
 
-  return bills.filter((bill) => matchesQuery(bill, query));
+export async function searchBills(query: string): Promise<BillListItem[]> {
+  const params = new URLSearchParams({
+    limit: BILL_SEARCH_PAGE_LIMIT,
+    fields: BILL_LIST_FIELDS,
+  });
+  const bills = await getPagedBills(`/bills?${params.toString()}`);
+
+  return bills.filter((bill) => isSelectableBill(bill) && matchesQuery(bill, query));
 }

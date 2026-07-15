@@ -31,5 +31,5 @@ export function getBillSelectionHref(query: string, billId: number): string {
     params.set("q", query);
   }
 
-  return `/invoices?${params.toString()}`;
+  return `/?${params.toString()}`;
 }
