@@ -110,11 +110,7 @@ body {
 }
 
 .invoice-workspace-pending-preview {
-  background: #dfe7f1;
-  inset: 0;
-  overflow: auto;
-  position: absolute;
-  z-index: 35;
+  min-height: 100%;
 }
 
 @keyframes loading-spin {

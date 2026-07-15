@@ -1,8 +1,15 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
 
 export const invoicePreviewLoadingEvent = "invoice-preview-loading";
+
+function scrollWorkspaceToTop() {
+  document
+    .querySelector(".invoice-workspace")
+    ?.scrollTo({ behavior: "smooth", top: 0 });
+}
 
 function SkeletonLine({ className = "" }: { className?: string }) {
   return <span className={`loading-skeleton block ${className}`} />;
@@ -45,6 +52,7 @@ function PendingInvoicePreview() {
 }
 
 type InvoiceWorkspacePendingPreviewProps = {
+  children: ReactNode;
   selectedBillId: string;
 };
 
@@ -54,6 +62,7 @@ type PendingBill = {
 };
 
 export function InvoiceWorkspacePendingPreview({
+  children,
   selectedBillId,
 }: InvoiceWorkspacePendingPreviewProps) {
   const [pendingBill, setPendingBill] = useState<PendingBill | null>(null);
@@ -63,6 +72,7 @@ export function InvoiceWorkspacePendingPreview({
       const detail = (event as CustomEvent<{ billId?: string }>).detail;
 
       if (detail?.billId) {
+        scrollWorkspaceToTop();
         setPendingBill({
           billId: detail.billId,
           startedFromBillId: selectedBillId,
@@ -82,7 +92,7 @@ export function InvoiceWorkspacePendingPreview({
     pendingBill.billId === selectedBillId ||
     pendingBill.startedFromBillId !== selectedBillId
   ) {
-    return null;
+    return <>{children}</>;
   }
 
   return (
