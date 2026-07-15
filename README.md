@@ -1,6 +1,6 @@
 # Clio Invoice Generator
 
-Cloudflare Workers + D1 Clio Manage app for rendering finalized Clio bills into a custom printable invoice template.
+Cloudflare Workers + D1 Clio Manage app for searching finalized Clio bills and rendering them into a custom Jema Lawyers invoice preview and browser-generated PDF.
 
 ## Local Setup
 
@@ -30,20 +30,24 @@ http://127.0.0.1:3000/api/auth/clio/callback
 npm run preview
 ```
 
-## Current Milestone
+## What It Does
 
-Implemented:
+- Connects to Clio Manage with the OAuth authorization-code flow.
+- Stores encrypted OAuth tokens in the configured D1 database.
+- Searches read-only Clio bill data from the root invoice workspace.
+- Shows loading states while connecting, searching, selecting bills, and rendering invoices.
+- Renders selected bills into an on-screen invoice preview.
+- Generates matching client-side PDFs from the same invoice data.
+- Applies the Jema Lawyers firm branding, logo, payment details, and footer configuration from `lib/invoice-config.ts`.
+- Maps Clio bill details, matter/contact context, line items, tax, payments, and account-statement data into the invoice document model.
 
-- Clio OAuth authorization code flow
-- HTTP-only OAuth state cookie
-- encrypted D1 token storage
-- automatic access-token refresh
-- current-user verification
-- disconnect
+## Invoice Template Notes
 
-Next milestone:
-
-- bill search proof of concept using read-only Clio billing data
+- The preview is the visual source of truth for the downloaded PDF.
+- Presentation changes should be made in both the preview components under `components/invoice/preview` and the PDF components/styles under `components/invoice/pdf`.
+- Service line item tables show the attorney column; expense tables omit it to give descriptions and amounts more room.
+- Currency appears on rate, total, and grand-total labels, while subtotal and tax rows keep shorter labels.
+- The workspace shows a skeleton invoice while a newly selected bill is loading and scrolls the preview pane back to the top.
 
 ## D1 Data
 

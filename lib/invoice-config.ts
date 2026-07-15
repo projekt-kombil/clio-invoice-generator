@@ -20,7 +20,7 @@ export type InvoiceFirmConfig = {
 };
 
 export const invoiceFirmConfig: InvoiceFirmConfig = {
-  name: "Invoice Generator",
+  name: "Jema Lawyers",
   logoInitials: "IG",
   logoSrc: "/jema_lawyers.png",
   addressLines: [

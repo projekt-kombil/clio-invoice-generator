@@ -21,7 +21,7 @@ export function InvoicePreviewOverallTotal({
       <table className="invoice-table invoice-overall-total-table">
         <tbody>
           <tr>
-            <td>Subtotal ({invoice.firm.currencyCode})</td>
+            <td>Subtotal</td>
             <td>{formatInvoiceMoney(totalSummary.subtotal, invoice)}</td>
           </tr>
           <tr>
@@ -29,8 +29,7 @@ export function InvoicePreviewOverallTotal({
               Tax
               {invoice.taxRate !== null
                 ? ` (${formatInvoicePercent(invoice.taxRate)})`
-                : ""}{" "}
-              ({invoice.firm.currencyCode})
+                : ""}
             </td>
             <td>{formatInvoiceMoney(totalSummary.tax, invoice)}</td>
           </tr>
@@ -50,7 +49,7 @@ export function InvoicePreviewSignature({ invoice }: InvoicePreviewSectionProps)
   return (
     <section className="invoice-section invoice-signature-section">
       <h2 className="invoice-signature-heading">
-        With Compliments
+        With Compliments,
       </h2>
       <div className="invoice-signature-box">
         {signatureImageSrc ? (

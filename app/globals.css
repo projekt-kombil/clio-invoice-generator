@@ -110,11 +110,7 @@ body {
 }
 
 .invoice-workspace-pending-preview {
-  background: #dfe7f1;
-  inset: 0;
-  overflow: auto;
-  position: absolute;
-  z-index: 35;
+  min-height: 100%;
 }
 
 @keyframes loading-spin {
@@ -342,7 +338,7 @@ body {
   --invoice-soft-strong: #dbeaf4;
   color: var(--invoice-ink);
   font-family: Arial, Helvetica, sans-serif;
-  font-size: 11px;
+  font-size: 13px;
   line-height: 1.35;
   position: relative;
   width: 210mm;
@@ -395,7 +391,7 @@ body {
 
 .invoice-page h2 {
   color: var(--invoice-navy);
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
   letter-spacing: 0.1em;
   margin: 0 0 8px;
@@ -446,7 +442,7 @@ img.invoice-logo-mark {
 .invoice-brand p,
 .invoice-title-block p {
   color: var(--invoice-muted);
-  font-size: 11px;
+  font-size: 13px;
   margin: 0;
 }
 
@@ -468,7 +464,7 @@ img.invoice-logo-mark {
 
 .invoice-header-legal-team p {
   color: var(--invoice-ink);
-  font-size: 11px !important;
+  font-size: 13px !important;
   line-height: 1.35;
   margin: 0;
   text-align: right;
@@ -476,7 +472,7 @@ img.invoice-logo-mark {
 
 .invoice-header-legal-label {
   color: var(--invoice-navy) !important;
-  font-size: 11px !important;
+  font-size: 13px !important;
   font-weight: 700;
   letter-spacing: 0.1em;
   margin: 8px 0 4px !important;
@@ -514,7 +510,7 @@ img.invoice-logo-mark {
 .invoice-title-meta dt,
 .invoice-title-meta dd {
   color: var(--invoice-ink);
-  font-size: 11px;
+  font-size: 13px;
   line-height: 1.35;
   margin: 0;
 }
@@ -551,13 +547,13 @@ img.invoice-logo-mark {
 
 .invoice-summary-grid p {
   color: var(--invoice-navy);
-  font-size: 11px;
+  font-size: 13px;
   margin: 2px 0;
 }
 
 .summary-primary {
   color: var(--invoice-ink) !important;
-  font-size: 13px !important;
+  font-size: 15px !important;
   font-weight: 700;
   margin-bottom: 6px !important;
 }
@@ -583,14 +579,14 @@ img.invoice-logo-mark {
 .invoice-information dt,
 .invoice-totals dt {
   color: var(--invoice-muted);
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 600;
 }
 
 .invoice-information dd,
 .invoice-totals dd {
   color: var(--invoice-ink);
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
   margin: 0;
   text-align: right;
@@ -604,25 +600,25 @@ img.invoice-logo-mark {
   padding-top: 12mm;
 }
 
-.invoice-signature-heading {
-  color: var(--invoice-navy);
-  font-size: 11px;
+.invoice-page .invoice-signature-heading {
+  color: var(--invoice-ink);
+  font-size: 13px;
   font-weight: 700;
-  letter-spacing: 0.1em;
-  margin: 0 0 4px;
-  text-transform: uppercase;
+  letter-spacing: 0;
+  margin: 0 0 10px;
+  text-transform: none;
 }
 
 .invoice-re-line {
   color: var(--invoice-ink);
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 400;
   margin: 6mm 0 2mm;
 }
 
 .invoice-re-line strong {
   color: var(--invoice-navy);
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -630,20 +626,20 @@ img.invoice-logo-mark {
 
 .invoice-re-subject {
   color: var(--invoice-ink);
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
 }
 
 .invoice-table {
   border-collapse: collapse;
   color: var(--invoice-ink);
-  font-size: 11px;
+  font-size: 13px;
   width: 100%;
 }
 
 .invoice-table-title {
   color: var(--invoice-accent) !important;
-  font-size: 12px !important;
+  font-size: 13px !important;
   font-weight: 700 !important;
   letter-spacing: 0 !important;
   margin: 0 0 5px !important;
@@ -654,7 +650,7 @@ img.invoice-logo-mark {
   background: var(--invoice-soft-strong);
   border-bottom: 1px solid var(--invoice-header-rule);
   color: var(--invoice-navy);
-  font-size: 10px;
+  font-size: 13px;
   font-weight: 800;
   padding: 6px 5px;
   text-align: left;
@@ -671,6 +667,10 @@ img.invoice-logo-mark {
 .invoice-overall-total-table tr,
 .invoice-account-statement-table tbody tr {
   height: 31px;
+}
+
+.invoice-line-items tbody tr:not(.invoice-subtotal-row):not(.invoice-tax-row) td {
+  font-size: 12px;
 }
 
 .invoice-line-items th:nth-child(3),
@@ -700,27 +700,57 @@ img.invoice-logo-mark {
 
 .invoice-line-items th:nth-child(2),
 .invoice-line-items td:nth-child(2) {
-  width: 44%;
+  width: 36%;
 }
 
 .invoice-line-items th:nth-child(3),
 .invoice-line-items td:nth-child(3) {
-  width: 17%;
+  width: 11%;
 }
 
 .invoice-line-items th:nth-child(4),
 .invoice-line-items td:nth-child(4) {
-  width: 8%;
+  width: 12%;
 }
 
 .invoice-line-items th:nth-child(5),
 .invoice-line-items td:nth-child(5) {
-  width: 8%;
+  width: 13%;
 }
 
 .invoice-line-items th:nth-child(6),
 .invoice-line-items td:nth-child(6) {
-  width: 9%;
+  width: 14%;
+}
+
+.invoice-line-items-no-attorney th:nth-child(3),
+.invoice-line-items-no-attorney th:nth-child(4),
+.invoice-line-items-no-attorney th:nth-child(5),
+.invoice-line-items-no-attorney td:nth-child(3),
+.invoice-line-items-no-attorney td:nth-child(4),
+.invoice-line-items-no-attorney td:nth-child(5) {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.invoice-line-items-no-attorney th:nth-child(2),
+.invoice-line-items-no-attorney td:nth-child(2) {
+  width: 47%;
+}
+
+.invoice-line-items-no-attorney th:nth-child(3),
+.invoice-line-items-no-attorney td:nth-child(3) {
+  width: 12%;
+}
+
+.invoice-line-items-no-attorney th:nth-child(4),
+.invoice-line-items-no-attorney td:nth-child(4) {
+  width: 13%;
+}
+
+.invoice-line-items-no-attorney th:nth-child(5),
+.invoice-line-items-no-attorney td:nth-child(5) {
+  width: 14%;
 }
 
 .invoice-line-items tbody tr:nth-child(even):not(.invoice-subtotal-row) td {
@@ -781,7 +811,7 @@ img.invoice-logo-mark {
 
 .line-type {
   color: var(--invoice-muted);
-  font-size: 11px;
+  font-size: 12px;
   margin-top: 2px;
 }
 
@@ -795,7 +825,7 @@ img.invoice-logo-mark {
 
 .payment-instruction {
   color: var(--invoice-ink);
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
   margin: 0 0 5mm;
 }
@@ -812,7 +842,7 @@ img.invoice-logo-mark {
 
 .payment-bank-column h2 {
   color: var(--invoice-accent) !important;
-  font-size: 12px !important;
+  font-size: 13px !important;
   letter-spacing: 0 !important;
   margin-bottom: 3mm !important;
   text-transform: none !important;
@@ -833,7 +863,7 @@ img.invoice-logo-mark {
 .payment-bank-column dt,
 .payment-bank-column dd {
   color: var(--invoice-ink);
-  font-size: 11px;
+  font-size: 13px;
   margin: 0;
 }
 
@@ -873,7 +903,7 @@ img.invoice-logo-mark {
 .invoice-overall-total-table td {
   background: white;
   color: var(--invoice-ink);
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 800;
 }
 
@@ -881,7 +911,7 @@ img.invoice-logo-mark {
   background: var(--invoice-header-rule);
   border-bottom: 0;
   color: white;
-  font-size: 13px;
+  font-size: 15px;
 }
 
 .invoice-overall-total-table td:last-child {
@@ -904,7 +934,7 @@ img.invoice-logo-mark {
 
 .invoice-signature-box p {
   color: var(--invoice-ink);
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
   margin: 0;
 }
@@ -928,7 +958,7 @@ img.invoice-logo-mark {
 .statement-section-row td {
   background: var(--invoice-soft-strong);
   color: var(--invoice-navy);
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 800;
   text-align: center;
   vertical-align: middle;
@@ -948,13 +978,13 @@ img.invoice-logo-mark {
 .statement-total-row td {
   background: var(--invoice-navy);
   color: white;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 800;
 }
 
 .invoice-footer {
   color: var(--invoice-muted);
-  font-size: 12px;
+  font-size: 13px;
   margin-top: 18mm;
   padding-top: 8mm;
   text-align: center;

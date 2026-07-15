@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { invoiceFirmConfig } from "@/lib/invoice-config";
 
 type ClioConnectionActionsProps = {
   connectionStatus: {
@@ -42,12 +43,16 @@ export function ClioConnectionActions({
   if (connectionStatus.connected) {
     return (
       <>
-        <p className="text-sm text-slate-700">
-          Connected as{" "}
+        <div className="grid grid-cols-[6.75rem_auto] gap-x-2 gap-y-0.5 text-sm text-slate-700">
+          <span className="text-right">Connected as</span>
           <span className="font-semibold text-[var(--jema-navy)]">
             {connectionStatus.user?.name ?? "Clio user"}
           </span>
-        </p>
+          <span className="text-right">Firm</span>
+          <span className="font-semibold text-[var(--jema-navy)]">
+            {invoiceFirmConfig.name}
+          </span>
+        </div>
         <form
           action="/api/auth/clio/disconnect"
           method="post"
