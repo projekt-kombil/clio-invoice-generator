@@ -95,7 +95,7 @@ export function InvoicesSidebar({
           </p>
         ) : null}
 
-        <form className="invoice-search-form flex flex-col gap-2" action="/invoices">
+        <form className="invoice-search-form flex flex-col gap-2" action="/">
           <label className="text-sm font-semibold text-[var(--jema-navy)]" htmlFor="q">
             Search invoices
           </label>

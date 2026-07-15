@@ -34,11 +34,11 @@ export function createClioAuthorizeResponse(): NextResponse {
   return response;
 }
 
-export function redirectToInvoices(
+export function redirectToGenerator(
   request: NextRequest,
   params: Record<string, string>,
 ): NextResponse {
-  const url = new URL("/invoices", request.url);
+  const url = new URL("/", request.url);
 
   for (const [key, value] of Object.entries(params)) {
     url.searchParams.set(key, value);

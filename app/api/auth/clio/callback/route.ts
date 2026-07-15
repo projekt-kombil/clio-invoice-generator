@@ -1,6 +1,6 @@
 import {
   getExpectedOAuthState,
-  redirectToInvoices,
+  redirectToGenerator,
 } from "@/app/api/auth/clio/_lib/oauth-flow";
 import { exchangeAuthorizationCode, getClioConnectionStatus } from "@/lib/clio";
 import { NextRequest } from "next/server";
@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
 
   if (error) {
     console.warn("Clio callback returned an authorization error.");
-    return redirectToInvoices(request, {
+    return redirectToGenerator(request, {
       connection: "declined",
     });
   }
@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
       hasActualState: Boolean(actualState),
     });
 
-    return redirectToInvoices(request, {
+    return redirectToGenerator(request, {
       connection: "invalid_state",
     });
   }
@@ -40,7 +40,7 @@ export async function GET(request: NextRequest) {
 
   if (!code) {
     console.warn("Clio callback was missing an authorization code.");
-    return redirectToInvoices(request, {
+    return redirectToGenerator(request, {
       connection: "missing_code",
     });
   }
@@ -55,7 +55,7 @@ export async function GET(request: NextRequest) {
 
     if (!status.connected) {
       console.warn("Clio OAuth callback completed, but current-user verification failed.");
-      return redirectToInvoices(request, {
+      return redirectToGenerator(request, {
         connection: "verification_failed",
       });
     }
@@ -68,12 +68,12 @@ export async function GET(request: NextRequest) {
         : "Clio OAuth callback failed with an unknown error.",
     );
 
-    return redirectToInvoices(request, {
+    return redirectToGenerator(request, {
       connection: "failed",
     });
   }
 
-  return redirectToInvoices(request, {
+  return redirectToGenerator(request, {
     connection: "connected",
   });
 }

@@ -15,5 +15,5 @@ type InvoicePageProps = {
 export default async function InvoicePage({ params }: InvoicePageProps) {
   const { id } = await params;
 
-  redirect(`/invoices?bill=${encodeURIComponent(id)}`);
+  redirect(`/?bill=${encodeURIComponent(id)}`);
 }
