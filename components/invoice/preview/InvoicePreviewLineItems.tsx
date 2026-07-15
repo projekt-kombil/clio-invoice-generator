@@ -30,16 +30,25 @@ export function InvoicePreviewItemsTable({
   const tableGroups = getInvoiceLineItemTableGroups(group, {
     excludeTax: showTax,
   });
+  const showAttorneyColumn = group.label !== "Expenses";
+  const columnCount = showAttorneyColumn ? 6 : 5;
 
   return tableGroups.map((tableGroup) => (
     <section className="invoice-section" key={`${group.label}-${tableGroup.label}`}>
       <h2 className="invoice-table-title">{tableGroup.label}</h2>
-      <table className="invoice-table invoice-line-items">
+      <table
+        className={[
+          "invoice-table invoice-line-items",
+          showAttorneyColumn ? "" : "invoice-line-items-no-attorney",
+        ]
+          .filter(Boolean)
+          .join(" ")}
+      >
         <thead>
           <tr>
             <th>Date</th>
             <th>Description</th>
-            <th>Attorney</th>
+            {showAttorneyColumn ? <th>Attorney</th> : null}
             <th>Quantity</th>
             <th>Rate ({invoice.firm.currencyCode})</th>
             <th>Total ({invoice.firm.currencyCode})</th>
@@ -53,7 +62,7 @@ export function InvoicePreviewItemsTable({
                 <span className="line-description">{item.description}</span>
                 {item.note ? <span className="line-note">{item.note}</span> : null}
               </td>
-              <td>{item.attorney ?? ""}</td>
+              {showAttorneyColumn ? <td>{item.attorney ?? ""}</td> : null}
               <td>{formatInvoiceQuantity(item.quantity)}</td>
               <td>{formatInvoiceMoney(item.price, invoice)}</td>
               <td>
@@ -65,7 +74,7 @@ export function InvoicePreviewItemsTable({
             </tr>
           ))}
           <tr className="invoice-subtotal-row">
-            <td colSpan={6}>
+            <td colSpan={columnCount}>
               <div className="invoice-line-summary-pair">
                 <span>Subtotal</span>
                 <span>{formatInvoiceMoney(tableGroup.subtotal, invoice)}</span>
@@ -74,7 +83,7 @@ export function InvoicePreviewItemsTable({
           </tr>
           {showTax ? (
             <tr className="invoice-tax-row">
-              <td colSpan={6}>
+              <td colSpan={columnCount}>
                 <div className="invoice-line-summary-pair">
                   <span>
                     GST

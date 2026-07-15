@@ -49,6 +49,10 @@ export function InvoicePdfTable({
   const tableGroups = getInvoiceLineItemTableGroups(group, {
     excludeTax: showTax,
   });
+  const showAttorneyColumn = group.label !== "Expenses";
+  const descriptionCellStyle = showAttorneyColumn
+    ? styles.descriptionCell
+    : styles.descriptionCellNoAttorney;
 
   return (
     <>
@@ -62,10 +66,12 @@ export function InvoicePdfTable({
               <View key={`${tableGroup.label}-${chunkIndex}`} style={styles.table}>
                 <View style={styles.tableHeader} wrap={false}>
                   <Text style={[styles.cell, styles.dateCell]}>Date</Text>
-                  <Text style={[styles.cell, styles.descriptionCell]}>
+                  <Text style={[styles.cell, descriptionCellStyle]}>
                     Description
                   </Text>
-                  <Text style={[styles.cell, styles.attorneyCell]}>Attorney</Text>
+                  {showAttorneyColumn ? (
+                    <Text style={[styles.cell, styles.attorneyCell]}>Attorney</Text>
+                  ) : null}
                   <Text style={[styles.cell, styles.numericCell, styles.qtyCell]}>
                     Quantity
                   </Text>
@@ -89,15 +95,17 @@ export function InvoicePdfTable({
                     <Text style={[styles.cell, styles.dateCell]}>
                       {formatInvoiceDate(item.date)}
                     </Text>
-                    <View style={[styles.cell, styles.descriptionCell]}>
+                    <View style={[styles.cell, descriptionCellStyle]}>
                       <Text style={styles.lineDescription}>{item.description}</Text>
                       {item.note ? (
                         <Text style={styles.lineType}>{item.note}</Text>
                       ) : null}
                     </View>
-                    <Text style={[styles.cell, styles.attorneyCell]}>
-                      {item.attorney ?? ""}
-                    </Text>
+                    {showAttorneyColumn ? (
+                      <Text style={[styles.cell, styles.attorneyCell]}>
+                        {item.attorney ?? ""}
+                      </Text>
+                    ) : null}
                     <Text style={[styles.cell, styles.numericCell, styles.qtyCell]}>
                       {formatInvoiceQuantity(item.quantity)}
                     </Text>

@@ -19,7 +19,7 @@ export function InvoicePdfOverallTotal({ invoice }: InvoicePdfSectionProps) {
     <View style={styles.overallTotalSection} wrap={false}>
       <Text style={styles.tableTitle}>Invoice Total</Text>
       <View style={styles.overallTotalLineRow}>
-        <Text>Subtotal ({invoice.firm.currencyCode})</Text>
+        <Text>Subtotal</Text>
         <Text>{formatInvoiceMoney(totalSummary.subtotal, invoice)}</Text>
       </View>
       <View style={styles.overallTotalLineRow}>
@@ -27,8 +27,7 @@ export function InvoicePdfOverallTotal({ invoice }: InvoicePdfSectionProps) {
           Tax
           {invoice.taxRate !== null
             ? ` (${formatInvoicePercent(invoice.taxRate)})`
-            : ""}{" "}
-          ({invoice.firm.currencyCode})
+            : ""}
         </Text>
         <Text>{formatInvoiceMoney(totalSummary.tax, invoice)}</Text>
       </View>
@@ -45,7 +44,7 @@ export function InvoicePdfPaymentBlocks({ invoice }: InvoicePdfSectionProps) {
     <>
       <View style={styles.signatureSection} wrap={false}>
         <Text style={styles.signatureHeading}>
-          With Compliments
+          With Compliments,
         </Text>
         <View style={styles.signatureBox}>
           {imageSource(invoice.responsibleAttorneySignatureImage) ? (
