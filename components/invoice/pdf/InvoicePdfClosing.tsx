@@ -45,7 +45,7 @@ export function InvoicePdfPaymentBlocks({ invoice }: InvoicePdfSectionProps) {
     <>
       <View style={styles.signatureSection} wrap={false}>
         <Text style={styles.signatureHeading}>
-          With Comliments
+          With Compliments
         </Text>
         <View style={styles.signatureBox}>
           {imageSource(invoice.responsibleAttorneySignatureImage) ? (

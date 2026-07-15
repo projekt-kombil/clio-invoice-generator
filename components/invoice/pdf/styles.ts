@@ -130,19 +130,10 @@ export const invoicePdfStyles = StyleSheet.create({
   kicker: {
     marginBottom: 3,
     color: JEMA_NAVY,
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 700,
     letterSpacing: 0.8,
     textTransform: "uppercase",
-  },
-  invoiceTaxId: {
-    marginTop: 0,
-    color: JEMA_NAVY,
-    fontSize: 8,
-    fontWeight: 400,
-  },
-  invoiceTaxIdValue: {
-    fontWeight: 400,
   },
   titleMeta: {
     marginTop: 7.5,
@@ -365,7 +356,7 @@ export const invoicePdfStyles = StyleSheet.create({
     minHeight: TABLE_ROW_MIN_HEIGHT,
     paddingHorizontal: 8,
     paddingVertical: 7,
-    backgroundColor: JEMA_NAVY,
+    backgroundColor: JEMA_HEADER_RULE,
     color: "#ffffff",
     fontSize: 10,
     fontWeight: 700,

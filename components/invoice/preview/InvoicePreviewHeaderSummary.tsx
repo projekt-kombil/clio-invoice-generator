@@ -55,11 +55,11 @@ export function InvoicePreviewHeader({ invoice }: InvoicePreviewSectionProps) {
         </div>
 
         <h2 className="invoice-kicker">Tax Invoice</h2>
-        <p className="invoice-tax-id">
-          {invoice.firm.taxIdLabel}:{" "}
-          <span className="invoice-tax-id-value">{invoice.firm.taxId}</span>
-        </p>
         <dl className="invoice-title-meta">
+          <div>
+            <dt>{invoice.firm.taxIdLabel}:</dt>
+            <dd>{invoice.firm.taxId}</dd>
+          </div>
           <div>
             <dt>Invoice No</dt>
             <dd>{invoice.invoiceNumber}</dd>
