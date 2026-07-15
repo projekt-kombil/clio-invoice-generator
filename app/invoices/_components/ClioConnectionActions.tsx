@@ -43,19 +43,15 @@ export function ClioConnectionActions({
   if (connectionStatus.connected) {
     return (
       <>
-        <div className="text-sm text-slate-700">
-          <p>
-            Connected as{" "}
-            <span className="font-semibold text-[var(--jema-navy)]">
-              {connectionStatus.user?.name ?? "Clio user"}
-            </span>
-          </p>
-          <p className="mt-0.5">
-            Firm:{" "}
-            <span className="font-semibold text-[var(--jema-navy)]">
-              {invoiceFirmConfig.name}
-            </span>
-          </p>
+        <div className="grid grid-cols-[6.75rem_auto] gap-x-2 gap-y-0.5 text-sm text-slate-700">
+          <span className="text-right">Connected as</span>
+          <span className="font-semibold text-[var(--jema-navy)]">
+            {connectionStatus.user?.name ?? "Clio user"}
+          </span>
+          <span className="text-right">Firm</span>
+          <span className="font-semibold text-[var(--jema-navy)]">
+            {invoiceFirmConfig.name}
+          </span>
         </div>
         <form
           action="/api/auth/clio/disconnect"
