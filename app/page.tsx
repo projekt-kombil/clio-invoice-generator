@@ -1,7 +1,5 @@
-import { redirect } from "next/navigation";
+import { InvoicesPage } from "@/app/invoices/_components/InvoicesPage";
 
 export const dynamic = "force-dynamic";
 
-export default function Home() {
-  redirect("/invoices");
-}
+export default InvoicesPage;
