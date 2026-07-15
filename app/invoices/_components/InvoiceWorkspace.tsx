@@ -1,5 +1,6 @@
 import { InvoicePdfActions } from "@/components/invoice/InvoicePdfActions";
 import { InvoicePreview } from "@/components/invoice/InvoicePreview";
+import { InvoiceWorkspacePendingPreview } from "@/app/invoices/_components/InvoiceWorkspacePendingPreview";
 import type { InvoiceDocumentData } from "@/lib/invoice-document";
 
 type InvoiceWorkspaceProps = {
@@ -17,6 +18,8 @@ export function InvoiceWorkspace({
 }: InvoiceWorkspaceProps) {
   return (
     <section className="invoice-workspace min-w-0">
+      <InvoiceWorkspacePendingPreview selectedBillId={selectedBillId} />
+
       {isConnected && selectedBillId ? (
         <div className="invoice-workspace-toolbar screen-only">
           <div className="selected-invoice-badge">

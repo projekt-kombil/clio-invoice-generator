@@ -78,12 +78,16 @@ export function InvoicePdfHeader({ invoice }: InvoicePdfSectionProps) {
           </View>
         </View>
 
-        <Text style={styles.kicker}>Tax Invoice</Text>
-        <Text style={styles.invoiceTaxId}>
-          {invoice.firm.taxIdLabel}:{" "}
-          <Text style={styles.invoiceTaxIdValue}>{invoice.firm.taxId}</Text>
+        <Text style={styles.kicker} wrap={false}>
+          Tax Invoice
         </Text>
         <View style={styles.titleMeta}>
+          <View style={styles.titleMetaRow}>
+            <Text style={styles.titleMetaLabel}>
+              {invoice.firm.taxIdLabel}:
+            </Text>
+            <Text style={styles.titleMetaValue}>{invoice.firm.taxId}</Text>
+          </View>
           <View style={styles.titleMetaRow}>
             <Text style={styles.titleMetaLabel}>Invoice No</Text>
             <Text style={styles.titleMetaValue}>{invoice.invoiceNumber}</Text>

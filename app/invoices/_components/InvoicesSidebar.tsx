@@ -1,11 +1,6 @@
 import type { BillListItem } from "@/lib/clio-bills";
-import {
-  formatDisplayDate,
-  formatInvoiceMoney,
-} from "@/lib/invoice-formatting";
-import Link from "next/link";
-
-import { getBillSelectionHref } from "@/app/invoices/_lib/invoice-page-helpers";
+import { BillListItemLink } from "@/app/invoices/_components/BillListItemLink";
+import { InvoiceSearchForm } from "@/app/invoices/_components/InvoiceSearchForm";
 
 type InvoicesSidebarProps = {
   bills: BillListItem[];
@@ -18,59 +13,6 @@ type InvoicesSidebarProps = {
   query: string;
   selectedBillId: string;
 };
-
-function BillListItemLink({
-  bill,
-  isSelected,
-  query,
-}: {
-  bill: BillListItem;
-  isSelected: boolean;
-  query: string;
-}) {
-  return (
-    <Link
-      aria-current={isSelected ? "page" : undefined}
-      className={[
-        "invoice-bill-card block rounded-md border p-4 text-sm transition",
-        isSelected
-          ? "border-[var(--jema-navy)] bg-[var(--jema-navy)] text-white"
-          : "border-slate-300 bg-white text-slate-800 hover:border-[var(--jema-cranberry)] hover:bg-slate-50",
-      ].join(" ")}
-      href={getBillSelectionHref(query, bill.id)}
-      key={bill.id}
-    >
-      <span className="flex items-center justify-between gap-3">
-        <span className="font-semibold">{bill.number}</span>
-        <span className={isSelected ? "text-slate-200" : "text-slate-500"}>
-          {bill.state ?? "Not shown"}
-        </span>
-      </span>
-      <span className="mt-2 block font-medium">
-        {bill.clientName ?? ""}
-      </span>
-      <span
-        className={[
-          "mt-3 grid grid-cols-2 gap-2 text-xs",
-          isSelected ? "text-slate-200" : "text-slate-600",
-        ].join(" ")}
-      >
-        <span>
-          Issued
-          <strong className="block font-semibold">
-            {formatDisplayDate(bill.issuedAt)}
-          </strong>
-        </span>
-        <span>
-          Balance
-          <strong className="block font-semibold">
-            {formatInvoiceMoney(bill.balance) || "Not shown"}
-          </strong>
-        </span>
-      </span>
-    </Link>
-  );
-}
 
 export function InvoicesSidebar({
   bills,
@@ -95,29 +37,10 @@ export function InvoicesSidebar({
           </p>
         ) : null}
 
-        <form className="invoice-search-form flex flex-col gap-2" action="/">
-          <label className="text-sm font-semibold text-[var(--jema-navy)]" htmlFor="q">
-            Search invoices
-          </label>
-          <div className="flex flex-col gap-2">
-            <input
-              className="invoice-search-control invoice-search-input min-w-0 border px-3 text-sm text-slate-950 outline-none"
-              defaultValue={query}
-              disabled={!connectionStatus.connected}
-              id="q"
-              name="q"
-              placeholder="Invoice number, client, or status"
-              type="search"
-            />
-            <button
-              className="invoice-search-control invoice-search-button inline-flex items-center justify-center px-5 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:bg-slate-300"
-              disabled={!connectionStatus.connected}
-              type="submit"
-            >
-              Search
-            </button>
-          </div>
-        </form>
+        <InvoiceSearchForm
+          disabled={!connectionStatus.connected}
+          query={query}
+        />
 
         {!connectionStatus.connected ? (
           <p className="rounded-md border border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-700">

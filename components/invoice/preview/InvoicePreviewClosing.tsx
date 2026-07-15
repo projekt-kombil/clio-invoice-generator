@@ -50,7 +50,7 @@ export function InvoicePreviewSignature({ invoice }: InvoicePreviewSectionProps)
   return (
     <section className="invoice-section invoice-signature-section">
       <h2 className="invoice-signature-heading">
-        With Comliments
+        With Compliments
       </h2>
       <div className="invoice-signature-box">
         {signatureImageSrc ? (
