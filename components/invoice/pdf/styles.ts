@@ -10,6 +10,7 @@ const JEMA_NAVY = "#000000";
 const JEMA_RULE = invoiceTheme.rule;
 const JEMA_SOFT = invoiceTheme.soft;
 const JEMA_SOFT_STRONG = invoiceTheme.softStrong;
+const JEMA_WATERMARK = invoiceTheme.accent;
 const TABLE_ROW_MIN_HEIGHT = 23;
 
 export const invoicePdfStyles = StyleSheet.create({
@@ -34,10 +35,12 @@ export const invoicePdfStyles = StyleSheet.create({
     transform: "rotate(-34deg)",
   },
   watermark: {
-    color: JEMA_ACCENT,
+    color: JEMA_WATERMARK,
     opacity: 0.14,
     fontSize: 92,
-    fontWeight: 700,
+    fontWeight: 800,
+    letterSpacing: 0,
+    lineHeight: 1,
     textTransform: "uppercase",
   },
   header: {
