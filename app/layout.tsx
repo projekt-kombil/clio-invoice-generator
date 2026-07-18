@@ -4,6 +4,10 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "Clio Invoice Generator",
   description: "Local Clio custom invoice generator",
+  robots: {
+    index: false,
+    follow: false,
+  },
 };
 
 export default function RootLayout({
