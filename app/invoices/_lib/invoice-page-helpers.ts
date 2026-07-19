@@ -5,7 +5,7 @@ export function getConnectionMessage(
   switch (connection) {
     case "connected":
       return isConnected
-        ? "Connected to Clio successfully."
+        ? null
         : "Clio returned from authorization, but the local app could not verify the connection. Please connect again.";
     case "disconnected":
       return "Disconnected from Clio.";
