@@ -4,6 +4,8 @@ import { InvoiceWorkspacePendingPreview } from "@/app/invoices/_components/Invoi
 import type { InvoiceDocumentData } from "@/lib/invoice-document";
 
 type InvoiceWorkspaceProps = {
+  connectionMessage: string | null;
+  connectionReason?: string | null;
   isConnected: boolean;
   selectedBillId: string;
   selectedInvoice: InvoiceDocumentData | null;
@@ -11,11 +13,21 @@ type InvoiceWorkspaceProps = {
 };
 
 export function InvoiceWorkspace({
+  connectionMessage,
+  connectionReason,
   isConnected,
   selectedBillId,
   selectedInvoice,
   selectedInvoiceError,
 }: InvoiceWorkspaceProps) {
+  const disconnectedMessage = [
+    connectionMessage,
+    connectionReason,
+    "Connect to Clio to load bills from your account.",
+  ]
+    .filter((message): message is string => Boolean(message))
+    .join(" ");
+
   return (
     <section className="invoice-workspace min-w-0">
       <InvoiceWorkspacePendingPreview selectedBillId={selectedBillId}>
@@ -49,7 +61,7 @@ export function InvoiceWorkspace({
               </h2>
               <p className="mt-2 text-sm text-slate-600">
                 {!isConnected
-                  ? "Once connected, your bill list will appear on the left and the selected invoice will appear here."
+                  ? disconnectedMessage
                   : selectedInvoiceError ??
                     "Choose a bill from the list to preview the invoice and use the PDF actions."}
               </p>

@@ -30,6 +30,9 @@ export async function InvoicesPage({ searchParams }: InvoicesPageProps) {
     connection,
     connectionStatus.connected,
   );
+  const connectionReason = connectionStatus.connected
+    ? null
+    : connectionStatus.reason;
   let bills: BillListItem[] = [];
   let errorMessage: string | null = null;
   let selectedInvoice: InvoiceDocumentData | null = null;
@@ -75,6 +78,8 @@ export async function InvoicesPage({ searchParams }: InvoicesPageProps) {
             selectedBillId={selectedBillId}
           />
           <InvoiceWorkspace
+            connectionMessage={connectionMessage}
+            connectionReason={connectionReason}
             isConnected={connectionStatus.connected}
             selectedBillId={selectedBillId}
             selectedInvoice={selectedInvoice}

@@ -25,15 +25,9 @@ export function InvoicesSidebar({
   return (
     <aside className="invoice-sidebar screen-only border-b border-slate-300 bg-white xl:border-b-0 xl:border-r">
       <div className="invoice-sidebar-content flex h-full flex-col gap-5 p-5">
-        {connectionMessage ? (
+        {connectionStatus.connected && connectionMessage ? (
           <p className="rounded-md border border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-700">
             {connectionMessage}
-          </p>
-        ) : null}
-
-        {!connectionStatus.connected && connectionStatus.reason ? (
-          <p className="rounded-md border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-            {connectionStatus.reason}
           </p>
         ) : null}
 
@@ -41,12 +35,6 @@ export function InvoicesSidebar({
           disabled={!connectionStatus.connected}
           query={query}
         />
-
-        {!connectionStatus.connected ? (
-          <p className="rounded-md border border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-700">
-            Connect to Clio to load bills from your account.
-          </p>
-        ) : null}
 
         {connectionStatus.connected && errorMessage ? (
           <p className="rounded-md border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900">
