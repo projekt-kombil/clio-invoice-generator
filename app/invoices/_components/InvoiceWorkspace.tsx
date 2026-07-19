@@ -31,17 +31,15 @@ export function InvoiceWorkspace({
   return (
     <section className="invoice-workspace min-w-0">
       <InvoiceWorkspacePendingPreview selectedBillId={selectedBillId}>
-        {isConnected && selectedBillId ? (
+        {isConnected && selectedInvoice ? (
           <div className="invoice-workspace-toolbar screen-only">
             <div className="selected-invoice-badge">
               <span>Invoice</span>
-              <strong>{selectedInvoice?.invoiceNumber ?? selectedBillId}</strong>
+              <strong>{selectedInvoice.invoiceNumber}</strong>
             </div>
-            {selectedInvoice ? (
-              <div className="invoice-download-float">
-                <InvoicePdfActions invoice={selectedInvoice} />
-              </div>
-            ) : null}
+            <div className="invoice-download-float">
+              <InvoicePdfActions invoice={selectedInvoice} />
+            </div>
           </div>
         ) : null}
 

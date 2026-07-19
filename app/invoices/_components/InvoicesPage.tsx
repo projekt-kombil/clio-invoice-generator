@@ -42,8 +42,7 @@ export async function InvoicesPage({ searchParams }: InvoicesPageProps) {
     try {
       bills = await searchBills(query);
     } catch {
-      errorMessage =
-        "Unable to load bills from Clio. Check the connection and try again.";
+      errorMessage = "Unable to load the bill list from Clio.";
     }
   }
 
@@ -55,8 +54,7 @@ export async function InvoicesPage({ searchParams }: InvoicesPageProps) {
         ? null
         : "That bill could not be found in Clio.";
     } catch {
-      selectedInvoiceError =
-        "Unable to load the selected invoice from Clio. Check the connection and try again.";
+      selectedInvoiceError = "Unable to load this invoice from Clio.";
     }
   }
 
