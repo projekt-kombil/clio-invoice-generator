@@ -37,6 +37,8 @@ export type InvoiceDetailedStatementInvoice = {
 };
 
 export type InvoiceDocumentData = {
+  clioBillId: string;
+  clioMatterId: string | null;
   firm: InvoiceFirmConfig;
   invoiceNumber: string;
   issuedAt: string | null;

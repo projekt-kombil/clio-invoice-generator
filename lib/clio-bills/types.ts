@@ -24,8 +24,6 @@ export type ClioUserSummary = {
   name: string | null;
   initials: string | null;
   signature: string | null;
-  avatar: string | null;
-  email: string | null;
 };
 
 export type ClioAddress = {
@@ -92,23 +90,16 @@ export type BillDetailedStatementInvoice = {
 };
 
 export type BillDetail = BillListItem & {
-  kind: string | null;
   subject: string | null;
-  purchaseOrder: string | null;
   taxRate: number | null;
   taxSum: number | null;
   paid: number | null;
-  paidAt: string | null;
   discount: {
     rate: number | null;
     type: string | null;
   } | null;
   interest: {
     total: number | null;
-  } | null;
-  currency: {
-    id: number | null;
-    redacted: boolean | null;
   } | null;
   clientAddresses: ClioAddress[];
   matters: BillMatter[];

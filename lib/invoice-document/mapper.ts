@@ -222,6 +222,8 @@ export function toInvoiceDocumentData(bill: BillDetail): InvoiceDocumentData {
       : (servicesSubtotal ?? 0) + (expensesSubtotal ?? 0);
 
   return {
+    clioBillId: String(bill.id),
+    clioMatterId: primaryMatter?.id ? String(primaryMatter.id) : null,
     firm: invoiceFirmConfig,
     invoiceNumber: displayString(bill.number, `Invoice ${bill.id}`),
     issuedAt: optionalString(bill.issuedAt),

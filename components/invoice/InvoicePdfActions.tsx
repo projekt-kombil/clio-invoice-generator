@@ -28,6 +28,22 @@ function downloadBlob(blob: Blob, filename: string): void {
   window.setTimeout(() => URL.revokeObjectURL(url), 30_000);
 }
 
+async function logInvoiceDownload(invoice: InvoiceDocumentData): Promise<void> {
+  await fetch(
+    `/api/invoices/${encodeURIComponent(invoice.clioBillId)}/download-log`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        clioMatterId: invoice.clioMatterId,
+        invoiceNumber: invoice.invoiceNumber,
+      }),
+    },
+  );
+}
+
 function DownloadIcon() {
   return (
     <svg
@@ -60,6 +76,7 @@ export function InvoicePdfActions({ invoice }: InvoicePdfActionsProps) {
         "@/components/invoice/InvoicePdfDocument"
       );
       const blob = await renderInvoicePdfBlob(invoice);
+      await logInvoiceDownload(invoice).catch(() => undefined);
       downloadBlob(blob, filenameForInvoice(invoice.invoiceNumber));
     } catch (error) {
       console.error("Client PDF generation failed", error);

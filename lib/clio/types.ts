@@ -11,6 +11,7 @@ export type ClioConnectionStatus =
   | {
       connected: false;
       reason?: string;
+      hasSession?: boolean;
     };
 
 export type ClioTokenResponse = {
