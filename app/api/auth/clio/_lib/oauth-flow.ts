@@ -14,6 +14,7 @@ export function createClioAuthorizeResponse(): NextResponse {
   const env = getAppEnv();
   const state = randomBytes(32).toString("base64url");
   const authorizeUrl = new URL(env.clioAuthorizeUrl);
+  const isSecureAppOrigin = new URL(env.appOrigin).protocol === "https:";
 
   authorizeUrl.searchParams.set("response_type", "code");
   authorizeUrl.searchParams.set("client_id", env.clioClientId);
@@ -27,6 +28,7 @@ export function createClioAuthorizeResponse(): NextResponse {
     value: state,
     httpOnly: true,
     sameSite: "lax",
+    secure: isSecureAppOrigin,
     path: "/",
     maxAge: STATE_COOKIE_TTL_SECONDS,
   });

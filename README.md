@@ -5,6 +5,11 @@ Cloudflare Workers + D1 Clio Manage app for searching finalized Clio bills and r
 ## Local Setup
 
 Create `.env.local` from `.env.example` and fill in the Clio private app credentials.
+Use a strong random `TOKEN_ENCRYPTION_KEY` with at least 32 characters; for example:
+
+```bash
+openssl rand -base64 32
+```
 
 ```bash
 npm install

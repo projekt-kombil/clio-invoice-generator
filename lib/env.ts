@@ -13,11 +13,35 @@ type AppEnv = {
   tokenEncryptionKey: string;
 };
 
+const MIN_TOKEN_ENCRYPTION_KEY_LENGTH = 32;
+
 function requireEnv(name: string): string {
   const value = process.env[name];
 
   if (!value) {
     throw new Error(`Missing required environment variable: ${name}`);
+  }
+
+  return value;
+}
+
+function requireUrlEnv(name: string): string {
+  const value = requireEnv(name);
+
+  try {
+    return new URL(value).toString().replace(/\/$/, "");
+  } catch {
+    throw new Error(`Environment variable ${name} must be a valid URL.`);
+  }
+}
+
+function requireTokenEncryptionKey(): string {
+  const value = requireEnv("TOKEN_ENCRYPTION_KEY");
+
+  if (value.length < MIN_TOKEN_ENCRYPTION_KEY_LENGTH) {
+    throw new Error(
+      `TOKEN_ENCRYPTION_KEY must be at least ${MIN_TOKEN_ENCRYPTION_KEY_LENGTH} characters long.`,
+    );
   }
 
   return value;
@@ -29,8 +53,8 @@ function getClioOrigin(baseUrl: string): string {
 }
 
 export function getAppEnv(): AppEnv {
-  const clioBaseUrl = requireEnv("CLIO_BASE_URL").replace(/\/$/, "");
-  const clioRedirectUri = requireEnv("CLIO_REDIRECT_URI");
+  const clioBaseUrl = requireUrlEnv("CLIO_BASE_URL");
+  const clioRedirectUri = requireUrlEnv("CLIO_REDIRECT_URI");
   const clioOrigin = getClioOrigin(clioBaseUrl);
 
   return {
@@ -43,6 +67,6 @@ export function getAppEnv(): AppEnv {
     clioAuthorizeUrl: `${clioOrigin}/oauth/authorize`,
     clioTokenUrl: `${clioOrigin}/oauth/token`,
     clioDeauthorizeUrl: `${clioOrigin}/oauth/deauthorize`,
-    tokenEncryptionKey: requireEnv("TOKEN_ENCRYPTION_KEY"),
+    tokenEncryptionKey: requireTokenEncryptionKey(),
   };
 }
