@@ -5,17 +5,20 @@ import { getCurrentClioSessionUserId } from "@/lib/clio/session";
 import { getAppEnv } from "@/lib/env";
 
 export async function getClioConnectionStatus(): Promise<ClioConnectionStatus> {
+  const sessionUserId = await getCurrentClioSessionUserId();
+
   try {
     const user = await getCurrentClioUser();
 
     if (!user) {
-      return { connected: false };
+      return { connected: false, hasSession: Boolean(sessionUserId) };
     }
 
     return { connected: true, user };
   } catch {
     return {
       connected: false,
+      hasSession: Boolean(sessionUserId),
       reason: "Unable to verify the Clio connection right now.",
     };
   }

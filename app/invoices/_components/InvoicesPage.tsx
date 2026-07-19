@@ -1,6 +1,7 @@
 import { InvoicesHeader } from "@/app/invoices/_components/InvoicesHeader";
 import { InvoicesSidebar } from "@/app/invoices/_components/InvoicesSidebar";
 import { InvoiceWorkspace } from "@/app/invoices/_components/InvoiceWorkspace";
+import { ClioSessionCleanup } from "@/app/invoices/_components/ClioSessionCleanup";
 import { getConnectionMessage } from "@/app/invoices/_lib/invoice-page-helpers";
 import { getClioConnectionStatus } from "@/lib/clio";
 import { searchBills } from "@/lib/clio-bills";
@@ -58,6 +59,9 @@ export async function InvoicesPage({ searchParams }: InvoicesPageProps) {
 
   return (
     <main className="invoice-app-shell flex min-h-dvh flex-col text-slate-950">
+      {!connectionStatus.connected && connectionStatus.hasSession ? (
+        <ClioSessionCleanup />
+      ) : null}
       <div className="flex min-h-dvh flex-col overflow-hidden">
         <InvoicesHeader connectionStatus={connectionStatus} />
 
