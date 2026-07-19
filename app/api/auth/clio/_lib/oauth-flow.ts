@@ -60,10 +60,10 @@ export function createClioAuthorizeResponse(): NextResponse {
 }
 
 export function redirectToGenerator(
-  request: NextRequest,
+  _request: NextRequest,
   params: Record<string, string>,
 ): NextResponse {
-  const url = new URL("/", request.url);
+  const url = new URL("/", getAppEnv().appOrigin);
 
   for (const [key, value] of Object.entries(params)) {
     url.searchParams.set(key, value);
