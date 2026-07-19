@@ -62,6 +62,27 @@ Remote:
 npx wrangler d1 execute jema_clio_db --remote --command "DELETE FROM clio_connections WHERE user_id = 'clio:USER_ID';"
 ```
 
+## Handle TOKEN_ENCRYPTION_KEY Compromise
+
+If `TOKEN_ENCRYPTION_KEY` is exposed, set a new strong value locally and in
+Cloudflare, then delete all stored Clio connections. Users must reconnect with
+Clio after this.
+
+Local:
+
+```bash
+npx wrangler d1 execute jema_clio_db --local --command "DELETE FROM clio_connections;"
+```
+
+Remote:
+
+```bash
+npx wrangler d1 execute jema_clio_db --remote --command "DELETE FROM clio_connections;"
+```
+
+Keep `invoice_download_logs` unless there is a separate legal or operational
+reason to delete audit history.
+
 ## Delete Legacy Default Connection
 
 Use only for old installs that still have the pre-per-user OAuth connection.

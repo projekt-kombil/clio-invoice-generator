@@ -52,6 +52,16 @@ Never commit:
 If a secret is exposed, revoke or rotate it immediately and update the relevant
 local, Cloudflare, or Clio configuration.
 
+### Token Encryption Key Compromise
+
+`TOKEN_ENCRYPTION_KEY` protects stored Clio OAuth tokens. If it is exposed,
+replace it with a new strong value and delete all rows from `clio_connections`.
+Existing users must reconnect with Clio because old encrypted tokens should no
+longer be trusted or reused.
+
+Keep `invoice_download_logs` unless there is a separate legal or operational
+reason to delete audit history.
+
 ## Production Configuration
 
 Production must use:
