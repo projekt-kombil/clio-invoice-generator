@@ -19,14 +19,7 @@ async function postForm<T>(url: string, body: URLSearchParams): Promise<T> {
   });
 
   if (!response.ok) {
-    const responseText = await response.text();
-    const details = responseText.trim()
-      ? ` ${responseText.trim().slice(0, 500)}`
-      : "";
-
-    throw new Error(
-      `Clio token request failed with status ${response.status}.${details}`,
-    );
+    throw new Error(`Clio token request failed with status ${response.status}.`);
   }
 
   return (await response.json()) as T;
