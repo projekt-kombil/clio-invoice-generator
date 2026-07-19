@@ -61,8 +61,6 @@ function normalizeUser(value: unknown): ClioUserSummary | null {
     name: getString(user.name),
     initials: getString(user.initials),
     signature: getImageUrl(user.signature),
-    avatar: getImageUrl(user.avatar),
-    email: getString(user.email),
   };
 }
 
@@ -159,18 +157,14 @@ export function normalizeBillDetail(
 
   const discount = getObject(bill.discount);
   const interest = getObject(bill.interest);
-  const currency = getObject(bill.currency);
   const rawMatters = Array.isArray(bill.matters) ? bill.matters : [];
 
   return {
     ...listItem,
-    kind: getString(bill.kind),
     subject: getString(bill.subject),
-    purchaseOrder: getString(bill.purchase_order),
     taxRate: getNumber(bill.tax_rate),
     taxSum: getNumber(bill.tax_sum),
     paid: getNumber(bill.paid),
-    paidAt: getString(bill.paid_at),
     discount: discount
       ? {
           rate: getNumber(discount.rate),
@@ -180,13 +174,6 @@ export function normalizeBillDetail(
     interest: interest
       ? {
           total: getNumber(interest.total),
-        }
-      : null,
-    currency: currency
-      ? {
-          id: getNumber(currency.id),
-          redacted:
-            typeof currency.redacted === "boolean" ? currency.redacted : null,
         }
       : null,
     clientAddresses: [],
