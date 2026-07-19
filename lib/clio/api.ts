@@ -7,6 +7,39 @@ import type {
 } from "@/lib/clio/types";
 import { getAppEnv } from "@/lib/env";
 
+const CLIO_RATE_LIMIT_MAX_RETRIES = 2;
+const CLIO_RATE_LIMIT_DEFAULT_RETRY_MS = 1_000;
+const CLIO_RATE_LIMIT_MAX_RETRY_MS = 10_000;
+
+function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function getRetryDelayMs(response: Response): number {
+  const retryAfter = response.headers.get("retry-after");
+
+  if (!retryAfter) {
+    return CLIO_RATE_LIMIT_DEFAULT_RETRY_MS;
+  }
+
+  const seconds = Number(retryAfter);
+  const retryMs = Number.isFinite(seconds)
+    ? seconds * 1_000
+    : new Date(retryAfter).getTime() - Date.now();
+
+  if (!Number.isFinite(retryMs) || retryMs <= 0) {
+    return CLIO_RATE_LIMIT_DEFAULT_RETRY_MS;
+  }
+
+  return Math.min(retryMs, CLIO_RATE_LIMIT_MAX_RETRY_MS);
+}
+
+function isRetryableClioRequest(options: ClioApiFetchOptions): boolean {
+  const method = options.method?.toUpperCase() ?? "GET";
+
+  return method === "GET" || method === "HEAD";
+}
+
 export async function clioApiFetch(
   path: string,
   options: ClioApiFetchOptions = {},
@@ -23,17 +56,31 @@ export async function clioApiFetch(
 
   headers.set("Authorization", `Bearer ${accessToken}`);
 
-  const response = await fetch(url, {
-    ...options,
-    headers,
-    cache: "no-store",
-  });
+  let response: Response;
 
-  if (response.status === 401) {
+  for (let attempt = 0; attempt <= CLIO_RATE_LIMIT_MAX_RETRIES; attempt += 1) {
+    response = await fetch(url, {
+      ...options,
+      headers,
+      cache: "no-store",
+    });
+
+    if (
+      response.status !== 429 ||
+      !isRetryableClioRequest(options) ||
+      attempt === CLIO_RATE_LIMIT_MAX_RETRIES
+    ) {
+      break;
+    }
+
+    await delay(getRetryDelayMs(response));
+  }
+
+  if (response!.status === 401) {
     await deleteClioTokens();
   }
 
-  return response;
+  return response!;
 }
 
 export async function getCurrentClioUser(): Promise<ClioCurrentUser | null> {
