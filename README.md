@@ -60,6 +60,7 @@ npm run preview
 ## D1 Data
 
 OAuth tokens are encrypted before being stored in the `jema_clio_db` D1 database. This project intentionally has no SQLite or local file-database fallback.
+See `DATA_RETENTION.md` for the stored data, retention expectations, and manual deletion commands.
 
 Apply migrations before local testing:
 
