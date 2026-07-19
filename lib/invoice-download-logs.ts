@@ -4,9 +4,8 @@ import { randomUUID } from "crypto";
 
 import { getCloudflareD1 } from "@/lib/clio-token-store/d1";
 
-const DEFAULT_USER_ID = "default";
-
 type InvoiceDownloadLog = {
+  userId: string;
   clioBillId: string;
   clioMatterId: string | null;
   invoiceNumber: string;
@@ -15,6 +14,7 @@ type InvoiceDownloadLog = {
 };
 
 export async function logInvoiceDownload({
+  userId,
   clioBillId,
   clioMatterId,
   invoiceNumber,
@@ -41,7 +41,7 @@ export async function logInvoiceDownload({
     )
     .bind(
       randomUUID(),
-      DEFAULT_USER_ID,
+      userId,
       clioBillId,
       clioMatterId,
       invoiceNumber,

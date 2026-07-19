@@ -1,3 +1,4 @@
+import { getCurrentClioSessionUserId } from "@/lib/clio/session";
 import { logInvoiceDownload } from "@/lib/invoice-download-logs";
 import { isSameOriginRequest } from "@/lib/request-security";
 import { NextRequest, NextResponse } from "next/server";
@@ -26,6 +27,7 @@ export async function POST(request: NextRequest, { params }: DownloadLogRoutePro
   }
 
   const { id } = await params;
+  const userId = await getCurrentClioSessionUserId();
   const body = (await request.json().catch(() => null)) as {
     clioMatterId?: unknown;
     invoiceNumber?: unknown;
@@ -37,11 +39,16 @@ export async function POST(request: NextRequest, { params }: DownloadLogRoutePro
       ? body.clioMatterId.trim()
       : null;
 
+  if (!userId) {
+    return NextResponse.json({ error: "Clio is not connected." }, { status: 401 });
+  }
+
   if (!id || !invoiceNumber) {
     return NextResponse.json({ error: "Missing download log data." }, { status: 400 });
   }
 
   await logInvoiceDownload({
+    userId,
     clioBillId: id,
     clioMatterId,
     invoiceNumber,

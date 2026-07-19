@@ -1,6 +1,7 @@
 import { getCurrentClioUser } from "@/lib/clio/api";
 import type { ClioConnectionStatus } from "@/lib/clio/types";
 import { deleteClioTokens, loadClioTokens } from "@/lib/clio-token-store";
+import { getCurrentClioSessionUserId } from "@/lib/clio/session";
 import { getAppEnv } from "@/lib/env";
 
 export async function getClioConnectionStatus(): Promise<ClioConnectionStatus> {
@@ -21,7 +22,13 @@ export async function getClioConnectionStatus(): Promise<ClioConnectionStatus> {
 }
 
 export async function disconnectClio(): Promise<void> {
-  const tokens = await loadClioTokens();
+  const userId = await getCurrentClioSessionUserId();
+
+  if (!userId) {
+    return;
+  }
+
+  const tokens = await loadClioTokens(userId);
   const env = getAppEnv();
 
   if (tokens) {
@@ -40,5 +47,5 @@ export async function disconnectClio(): Promise<void> {
     }
   }
 
-  await deleteClioTokens();
+  await deleteClioTokens(userId);
 }

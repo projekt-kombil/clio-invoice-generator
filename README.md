@@ -41,7 +41,7 @@ npm run preview
 ## What It Does
 
 - Connects to Clio Manage with the OAuth authorization-code flow.
-- Stores encrypted OAuth tokens in the configured D1 database.
+- Stores encrypted OAuth tokens per connected Clio user in the configured D1 database.
 - Searches read-only Clio bill data from the root invoice workspace.
 - Shows loading states while connecting, searching, selecting bills, and rendering invoices.
 - Renders selected bills into an on-screen invoice preview.

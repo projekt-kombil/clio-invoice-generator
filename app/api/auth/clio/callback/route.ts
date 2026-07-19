@@ -3,7 +3,8 @@ import {
   getExpectedOAuthState,
   redirectToGenerator,
 } from "@/app/api/auth/clio/_lib/oauth-flow";
-import { exchangeAuthorizationCode, getClioConnectionStatus } from "@/lib/clio";
+import { exchangeAuthorizationCode } from "@/lib/clio";
+import { setClioSessionCookie } from "@/lib/clio/session";
 import { NextRequest } from "next/server";
 
 export async function GET(request: NextRequest) {
@@ -45,17 +46,10 @@ export async function GET(request: NextRequest) {
     });
   }
 
+  let userId: string;
+
   try {
-    await exchangeAuthorizationCode(code, codeVerifier);
-
-    const status = await getClioConnectionStatus();
-
-    if (!status.connected) {
-      console.warn("Clio OAuth callback completed, but current-user verification failed.");
-      return redirectToGenerator(request, {
-        connection: "verification_failed",
-      });
-    }
+    userId = await exchangeAuthorizationCode(code, codeVerifier);
   } catch (error) {
     console.warn(
       error instanceof Error
@@ -68,7 +62,10 @@ export async function GET(request: NextRequest) {
     });
   }
 
-  return redirectToGenerator(request, {
+  const response = redirectToGenerator(request, {
     connection: "connected",
   });
+  setClioSessionCookie(response, userId);
+
+  return response;
 }

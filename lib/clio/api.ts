@@ -1,5 +1,6 @@
 import { deleteClioTokens } from "@/lib/clio-token-store";
 import { getValidClioAccessToken } from "@/lib/clio/oauth";
+import { getCurrentClioSessionUserId } from "@/lib/clio/session";
 import type {
   ClioApiFetchOptions,
   ClioCurrentUser,
@@ -77,7 +78,11 @@ export async function clioApiFetch(
   }
 
   if (response!.status === 401) {
-    await deleteClioTokens();
+    const userId = await getCurrentClioSessionUserId();
+
+    if (userId) {
+      await deleteClioTokens(userId);
+    }
   }
 
   return response!;
@@ -90,7 +95,11 @@ export async function getCurrentClioUser(): Promise<ClioCurrentUser | null> {
     console.warn(
       `Clio current-user request was rejected with status ${response.status}: ${await response.text()}`,
     );
-    await deleteClioTokens();
+    const userId = await getCurrentClioSessionUserId();
+
+    if (userId) {
+      await deleteClioTokens(userId);
+    }
     return null;
   }
 

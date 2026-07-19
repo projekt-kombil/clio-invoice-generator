@@ -5,8 +5,6 @@ import type {
 } from "@/lib/clio-token-store/types";
 
 const D1_BINDING = "jema_clio_db";
-const DEFAULT_USER_ID = "default";
-const DEFAULT_CONNECTION_ID = "default";
 
 type D1TokenRow = {
   access_token_encrypted: string;
@@ -94,10 +92,17 @@ export async function saveClioTokensToD1(
         )
         VALUES (?, ?, ?, 'admin', 1, ?, ?)
         ON CONFLICT(id) DO UPDATE SET
+          display_name = excluded.display_name,
           updated_at = excluded.updated_at
       `,
     )
-    .bind(DEFAULT_USER_ID, "clio-oauth@local.app", "Clio OAuth User", now, now)
+    .bind(
+      tokens.userId,
+      `${tokens.userId}@clio.local`,
+      tokens.displayName ?? tokens.userId,
+      now,
+      now,
+    )
     .run();
 
   await db
@@ -106,14 +111,16 @@ export async function saveClioTokensToD1(
         INSERT INTO clio_connections (
           id,
           user_id,
+          clio_user_id,
           access_token_encrypted,
           refresh_token_encrypted,
           token_expires_at,
           created_at,
           updated_at
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         ON CONFLICT(user_id) DO UPDATE SET
+          clio_user_id = excluded.clio_user_id,
           access_token_encrypted = excluded.access_token_encrypted,
           refresh_token_encrypted = excluded.refresh_token_encrypted,
           token_expires_at = excluded.token_expires_at,
@@ -121,8 +128,9 @@ export async function saveClioTokensToD1(
       `,
     )
     .bind(
-      DEFAULT_CONNECTION_ID,
-      DEFAULT_USER_ID,
+      tokens.userId,
+      tokens.userId,
+      tokens.clioUserId ?? tokens.userId,
       encryptToken(tokens.accessToken),
       encryptToken(tokens.refreshToken),
       tokens.expiresAt,
@@ -134,6 +142,7 @@ export async function saveClioTokensToD1(
 
 export async function loadClioTokensFromD1(
   db: D1Database,
+  userId: string,
 ): Promise<StoredClioTokens | null> {
   const row = await db
     .prepare(
@@ -148,7 +157,7 @@ export async function loadClioTokensFromD1(
         LIMIT 1
       `,
     )
-    .bind(DEFAULT_USER_ID)
+    .bind(userId)
     .first<D1TokenRow>();
 
   if (!row || !row.refresh_token_encrypted || !row.token_expires_at) {
@@ -163,9 +172,12 @@ export async function loadClioTokensFromD1(
   };
 }
 
-export async function deleteClioTokensFromD1(db: D1Database): Promise<void> {
+export async function deleteClioTokensFromD1(
+  db: D1Database,
+  userId: string,
+): Promise<void> {
   await db
     .prepare("DELETE FROM clio_connections WHERE user_id = ?")
-    .bind(DEFAULT_USER_ID)
+    .bind(userId)
     .run();
 }

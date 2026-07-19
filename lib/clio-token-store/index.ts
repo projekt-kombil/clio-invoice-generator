@@ -17,10 +17,12 @@ export async function saveClioTokens(tokens: ClioTokensToStore): Promise<void> {
   await saveClioTokensToD1(await getCloudflareD1(), tokens);
 }
 
-export async function loadClioTokens(): Promise<StoredClioTokens | null> {
-  return loadClioTokensFromD1(await getCloudflareD1());
+export async function loadClioTokens(
+  userId: string,
+): Promise<StoredClioTokens | null> {
+  return loadClioTokensFromD1(await getCloudflareD1(), userId);
 }
 
-export async function deleteClioTokens(): Promise<void> {
-  await deleteClioTokensFromD1(await getCloudflareD1());
+export async function deleteClioTokens(userId: string): Promise<void> {
+  await deleteClioTokensFromD1(await getCloudflareD1(), userId);
 }
