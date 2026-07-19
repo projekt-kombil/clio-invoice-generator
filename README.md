@@ -29,6 +29,9 @@ The Clio Developer Portal redirect URI must exactly match:
 http://127.0.0.1:3000/api/auth/clio/callback
 ```
 
+Enable PKCE for the Clio developer application; the OAuth flow sends a
+`S256` code challenge and requires the matching verifier during callback.
+
 `npm run dev` uses Next's dev server with OpenNext's Cloudflare binding initialization from `next.config.ts`, so local auth and token storage still use the local D1 binding. For a closer production runtime check, run:
 
 ```bash

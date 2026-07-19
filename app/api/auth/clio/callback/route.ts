@@ -1,4 +1,5 @@
 import {
+  getExpectedOAuthCodeVerifier,
   getExpectedOAuthState,
   redirectToGenerator,
 } from "@/app/api/auth/clio/_lib/oauth-flow";
@@ -7,12 +8,14 @@ import { NextRequest } from "next/server";
 
 export async function GET(request: NextRequest) {
   const expectedState = getExpectedOAuthState(request);
+  const codeVerifier = getExpectedOAuthCodeVerifier(request);
   const actualState = request.nextUrl.searchParams.get("state");
   const code = request.nextUrl.searchParams.get("code");
   const error = request.nextUrl.searchParams.get("error");
 
   console.log("Clio callback received", {
     hasCode: Boolean(code),
+    hasCodeVerifier: Boolean(codeVerifier),
     hasState: Boolean(actualState),
     hasExpectedState: Boolean(expectedState),
     hasError: Boolean(error),
@@ -45,9 +48,16 @@ export async function GET(request: NextRequest) {
     });
   }
 
+  if (!codeVerifier) {
+    console.warn("Clio callback was missing the PKCE code verifier.");
+    return redirectToGenerator(request, {
+      connection: "missing_code_verifier",
+    });
+  }
+
   try {
     console.log("Starting Clio authorization code exchange");
-    await exchangeAuthorizationCode(code);
+    await exchangeAuthorizationCode(code, codeVerifier);
     console.log("Clio authorization code exchange and token persistence completed");
 
     console.log("Starting Clio current-user verification");

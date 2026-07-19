@@ -32,7 +32,10 @@ async function postForm<T>(url: string, body: URLSearchParams): Promise<T> {
   return (await response.json()) as T;
 }
 
-export async function exchangeAuthorizationCode(code: string): Promise<void> {
+export async function exchangeAuthorizationCode(
+  code: string,
+  codeVerifier: string,
+): Promise<void> {
   const env = getAppEnv();
   const tokenResponse = await postForm<ClioTokenResponse>(
     env.clioTokenUrl,
@@ -41,6 +44,7 @@ export async function exchangeAuthorizationCode(code: string): Promise<void> {
       client_secret: env.clioClientSecret,
       grant_type: "authorization_code",
       code,
+      code_verifier: codeVerifier,
       redirect_uri: env.clioRedirectUri,
     }),
   );
